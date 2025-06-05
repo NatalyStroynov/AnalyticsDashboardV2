@@ -1,41 +1,38 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
 const path = require('path');
+const app = express();
+const PORT = 5000;
 
-const port = 5000;
+app.use(express.static('.'));
 
-const mimeTypes = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpg',
-  '.gif': 'image/gif',
-  '.ico': 'image/x-icon',
-  '.svg': 'image/svg+xml',
-  '.scss': 'text/css',
-  '.ts': 'text/plain'
-};
+app.get('/', (req, res) => {
+  res.send(createDemoHTML());
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
+});
 
 function createDemoHTML() {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics Dashboard - Architecture Demo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Angular Analytics Dashboard Demo</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.4/angular-material.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
-            font-family: 'Roboto', sans-serif;
-            background: #fafafa;
-            color: #424242;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
         }
         
         .dashboard-container {
@@ -44,100 +41,99 @@ function createDemoHTML() {
         }
         
         .sidebar {
-            width: 320px;
+            width: 300px;
             background: white;
-            border-right: 1px solid #e0e0e0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
             padding: 20px;
             overflow-y: auto;
         }
         
         .main-content {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .toolbar {
-            background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
             padding: 20px;
-            flex: 1;
             overflow-y: auto;
         }
         
-        .chart-widget {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            min-height: 300px;
-            transition: box-shadow 0.2s ease;
-        }
-        
-        .chart-widget:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        
-        .widget-header {
+        .sidebar h2 {
+            margin-bottom: 20px;
+            color: #1976d2;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e0e0;
+            gap: 10px;
         }
         
-        .widget-title {
-            font-size: 18px;
-            font-weight: 500;
-            color: #1976d2;
+        .filter-section, .dashboard-info {
+            margin-bottom: 30px;
         }
         
-        .chart-container {
-            position: relative;
-            height: 200px;
-        }
-        
-        .filter-section {
-            margin-bottom: 24px;
-        }
-        
-        .filter-title {
+        .filter-section h3, .dashboard-info h3 {
+            margin-bottom: 15px;
+            color: #666;
             font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 12px;
-            color: #424242;
         }
         
         .filter-item {
-            background: #f5f5f5;
-            border-radius: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
             padding: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #1976d2;
+            position: relative;
         }
         
         .btn {
             background: #1976d2;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 10px 16px;
+            border-radius: 6px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 14px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+            transition: background-color 0.2s;
         }
         
         .btn:hover {
             background: #1565c0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-widget {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .widget-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-bottom: 15px;
         }
         
         .material-icons {
@@ -259,34 +255,24 @@ function createDemoHTML() {
 </head>
 <body>
     <div class="demo-note">
-        <h3>📊 Angular 17 Analytics Dashboard Architecture Demo</h3>
-        <p>Демонстрация архитектуры панели аналитики с настраиваемыми графиками, фильтрами и масштабируемой структурой.</p>
+        <strong>Angular 17 Analytics Dashboard</strong> - Демонстрация архитектуры с компонентами, сервисами и интерактивностью
     </div>
 
     <div class="dashboard-container">
-        <!-- Filters Sidebar -->
+        <!-- Sidebar -->
         <div class="sidebar">
+            <h2>
+                <span class="material-icons">dashboard</span>
+                Дашборд
+            </h2>
+            
+            <!-- Filters Panel -->
             <div class="filter-section">
-                <div class="filter-title">
-                    <span class="material-icons">filter_list</span>
-                    Фильтры
-                </div>
-                
-                <div class="architecture-info">
-                    <h4>FiltersPanel Component</h4>
-                    <div class="code-structure">
-                        ✓ Dynamic filter creation<br>
-                        ✓ Multiple filter types (text, number, date, range)<br>
-                        ✓ Real-time filter application<br>
-                        ✓ Filter state management with signals
-                    </div>
-                </div>
-                
+                <h3>Фильтры</h3>
                 <div class="filter-item">
-                    <strong>Gender</strong><br>
-                    <small>Type: Select | Operator: Equals | Value: Female</small>
+                    <strong>Регион</strong><br>
+                    <small>Type: Select | Operator: Equals | Value: Москва</small>
                 </div>
-                
                 <div class="filter-item">
                     <strong>Age</strong><br>
                     <small>Type: Number | Operator: Greater Than | Value: 15</small>
@@ -301,20 +287,19 @@ function createDemoHTML() {
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Toolbar -->
-            <div class="toolbar">
-                <div>
-                    <button class="btn">
-                        <span class="material-icons">dashboard</span>
-                        Default Dashboard
-                    </button>
-                </div>
-                
-                <div class="architecture-info" style="flex: 1; margin: 0 20px;">
-                    <h4>DashboardSelector Component</h4>
+            <div class="dashboard-info">
+                <h3>Angular 17 Dashboard Architecture</h3>
+                <div class="architecture-info">
+                    <h4>Основные компоненты</h4>
                     <div class="code-structure">
-                        ✓ Multiple dashboard support<br>
-                        ✓ Dashboard creation/selection<br>
+                        ✓ DashboardPageComponent - Основная страница<br>
+                        ✓ ChartWidgetComponent - Компонент графика<br>
+                        ✓ FiltersPanelComponent - Панель фильтров<br>
+                        ✓ ChartConfigComponent - Настройка графиков<br>
+                        ✓ DashboardService - Управление состоянием<br>
+                        ✓ DataService - Обработка данных<br>
+                        ✓ Signal-based state management<br>
+                        ✓ Chart.js integration<br>
                         ✓ State persistence
                     </div>
                 </div>
@@ -350,12 +335,12 @@ function createDemoHTML() {
                         <canvas id="chart1"></canvas>
                     </div>
                     <div class="architecture-info">
-                        <h4>ChartWidget Component</h4>
+                        <h4>ChartWidgetComponent</h4>
                         <div class="code-structure">
+                            ✓ Signal-based data loading<br>
                             ✓ Chart.js integration<br>
-                            ✓ Dynamic data loading<br>
-                            ✓ Filter-aware rendering<br>
-                            ✓ Drag & drop support
+                            ✓ Dynamic filtering support<br>
+                            ✓ Edit/Delete/Duplicate actions
                         </div>
                     </div>
                 </div>
@@ -383,73 +368,12 @@ function createDemoHTML() {
                         <canvas id="chart2"></canvas>
                     </div>
                     <div class="architecture-info">
-                        <h4>Chart Configuration</h4>
+                        <h4>Pie Chart Implementation</h4>
                         <div class="code-structure">
-                            ✓ Multiple chart types (bar, line, pie, doughnut)<br>
-                            ✓ Axis configuration<br>
-                            ✓ Aggregation options (count, sum, avg, min, max)<br>
-                            ✓ Real-time preview
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Architecture Overview -->
-                <div class="chart-widget">
-                    <div class="widget-header">
-                        <div class="widget-title">
-                            <span class="material-icons">architecture</span>
-                            Архитектура системы
-                        </div>
-                    </div>
-                    <div class="architecture-info">
-                        <h4>Core Services</h4>
-                        <div class="code-structure">
-                            📊 DashboardService - State management<br>
-                            📈 DataService - Data fetching & aggregation<br>
-                            🔧 Angular 17 Signals - Reactive state<br>
-                            🎨 Angular Material - UI components
-                        </div>
-                        
-                        <h4 style="margin-top: 16px;">Component Structure</h4>
-                        <div class="code-structure">
-                            🏠 DashboardPage (container)<br>
-                            ├── 📊 DashboardSelector<br>
-                            ├── 🔍 FiltersPanel<br>
-                            ├── 📈 ChartWidget[]<br>
-                            └── ⚙️ ChartConfig (modal)
-                        </div>
-                        
-                        <h4 style="margin-top: 16px;">Key Features</h4>
-                        <div class="code-structure">
-                            ✓ Standalone components (Angular 17)<br>
-                            ✓ Signal-based reactive state<br>
-                            ✓ Drag & drop widget reordering<br>
-                            ✓ Real-time filter application<br>
-                            ✓ Configurable chart types & aggregations<br>
-                            ✓ Scalable data service architecture
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Data Flow Demo -->
-                <div class="chart-widget">
-                    <div class="widget-header">
-                        <div class="widget-title">
-                            <span class="material-icons">timeline</span>
-                            Поток данных
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="chart3"></canvas>
-                    </div>
-                    <div class="architecture-info">
-                        <h4>Data Flow</h4>
-                        <div class="code-structure">
-                            1. Filters applied → DashboardService<br>
-                            2. Service updates filters signal<br>
-                            3. ChartWidgets react to filter changes<br>
-                            4. DataService aggregates filtered data<br>
-                            5. Charts re-render with new data
+                            ✓ Reactive data updates<br>
+                            ✓ Custom aggregation logic<br>
+                            ✓ Interactive legends<br>
+                            ✓ Responsive design
                         </div>
                     </div>
                 </div>
@@ -457,8 +381,7 @@ function createDemoHTML() {
         </div>
     </div>
 
-    <!-- Модальные окна -->
-    <!-- Модальное окно добавления графика -->
+    <!-- Chart Configuration Modal -->
     <div id="chartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('chartModal')">&times;</span>
@@ -516,7 +439,7 @@ function createDemoHTML() {
         </div>
     </div>
 
-    <!-- Модальное окно добавления фильтра -->
+    <!-- Filter Configuration Modal -->
     <div id="filterModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('filterModal')">&times;</span>
@@ -562,22 +485,30 @@ function createDemoHTML() {
         </div>
     </div>
 
-    <!-- Уведомления -->
+    <!-- Notification -->
     <div id="notification" class="notification"></div>
 
     <script>
-        // Sample chart data and initialization
+        // Global variables
+        var chartCounter = 3;
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
+
+        // Initialize sample charts
         function initCharts() {
             // Chart 1 - Bar Chart
-            const ctx1 = document.getElementById('chart1').getContext('2d');
+            var ctx1 = document.getElementById('chart1').getContext('2d');
             new Chart(ctx1, {
                 type: 'bar',
                 data: {
                     labels: ['18-25', '26-35', '36-45', '46-55', '55+'],
                     datasets: [{
-                        label: 'Пользователи',
-                        data: [120, 190, 300, 250, 180],
-                        backgroundColor: 'rgba(25, 118, 210, 0.5)',
+                        label: 'Количество пользователей',
+                        data: [125, 189, 143, 98, 67],
+                        backgroundColor: 'rgba(25, 118, 210, 0.8)',
                         borderColor: 'rgba(25, 118, 210, 1)',
                         borderWidth: 1
                     }]
@@ -586,23 +517,32 @@ function createDemoHTML() {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true }
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
             });
 
             // Chart 2 - Pie Chart
-            const ctx2 = document.getElementById('chart2').getContext('2d');
+            var ctx2 = document.getElementById('chart2').getContext('2d');
             new Chart(ctx2, {
                 type: 'pie',
                 data: {
-                    labels: ['Мужчины', 'Женщины'],
+                    labels: ['Мужчины', 'Женщины', 'Не указано'],
                     datasets: [{
-                        data: [45, 55],
+                        data: [312, 298, 45],
                         backgroundColor: [
                             'rgba(25, 118, 210, 0.8)',
-                            'rgba(0, 150, 136, 0.8)'
-                        ]
+                            'rgba(0, 150, 136, 0.8)',
+                            'rgba(255, 152, 0, 0.8)'
+                        ],
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -610,37 +550,7 @@ function createDemoHTML() {
                     maintainAspectRatio: false
                 }
             });
-
-            // Chart 3 - Line Chart
-            const ctx3 = document.getElementById('chart3').getContext('2d');
-            new Chart(ctx3, {
-                type: 'line',
-                data: {
-                    labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
-                    datasets: [{
-                        label: 'Активность',
-                        data: [65, 59, 80, 81, 56, 55],
-                        borderColor: 'rgba(255, 152, 0, 1)',
-                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
         }
-
-        // Initialize charts when page loads
-        document.addEventListener('DOMContentLoaded', initCharts);
-
-        // Global variables
-        var charts = {};
-        var chartCounter = 3;
 
         // Modal functions
         function openModal(modalId) {
@@ -681,13 +591,14 @@ function createDemoHTML() {
             var newWidget = createChartWidget(chartCounter++, title, type);
             grid.appendChild(newWidget);
             closeModal('chartModal');
-            showNotification('График создан!');
+            showNotification('График "' + title + '" создан!');
             document.getElementById('chartTitle').value = '';
         }
 
         function createChartWidget(id, title, type) {
             var widget = document.createElement('div');
             widget.className = 'chart-widget';
+            
             widget.innerHTML = 
                 '<div class="widget-header">' +
                     '<div class="widget-title">' +
@@ -718,6 +629,7 @@ function createDemoHTML() {
                     '</div>' +
                 '</div>';
 
+            // Create chart after DOM update
             setTimeout(function() {
                 var canvas = document.getElementById('chart' + id);
                 if (canvas) {
@@ -730,11 +642,13 @@ function createDemoHTML() {
         }
 
         function getChartIcon(type) {
-            if (type === 'bar') return 'bar_chart';
-            if (type === 'line') return 'show_chart';
-            if (type === 'pie') return 'pie_chart';
-            if (type === 'doughnut') return 'donut_small';
-            return 'insert_chart';
+            switch(type) {
+                case 'bar': return 'bar_chart';
+                case 'line': return 'show_chart';
+                case 'pie': return 'pie_chart';
+                case 'doughnut': return 'donut_small';
+                default: return 'insert_chart';
+            }
         }
 
         function createSampleChart(ctx, type) {
@@ -807,12 +721,14 @@ function createDemoHTML() {
         }
 
         function getFieldLabel(field) {
-            if (field === 'age') return 'Возраст';
-            if (field === 'gender') return 'Пол';
-            if (field === 'region') return 'Регион';
-            if (field === 'status') return 'Статус';
-            if (field === 'date') return 'Дата';
-            return field;
+            switch(field) {
+                case 'age': return 'Возраст';
+                case 'gender': return 'Пол';
+                case 'region': return 'Регион';
+                case 'status': return 'Статус';
+                case 'date': return 'Дата';
+                default: return field;
+            }
         }
 
         function updateFilterOptions() {
@@ -852,6 +768,7 @@ function createDemoHTML() {
             }, 3000);
         }
 
+        // Close modals when clicking outside
         window.onclick = function(event) {
             var modals = document.querySelectorAll('.modal');
             for (var i = 0; i < modals.length; i++) {
@@ -864,38 +781,3 @@ function createDemoHTML() {
 </body>
 </html>`;
 }
-
-const server = http.createServer((req, res) => {
-  if (req.url === '/' || req.url === '/index.html') {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(createDemoHTML());
-    return;
-  }
-
-  let filePath = path.join(__dirname, req.url);
-  
-  // Security check
-  if (!filePath.startsWith(__dirname)) {
-    res.writeHead(403);
-    res.end('Forbidden');
-    return;
-  }
-
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404);
-      res.end('File not found');
-      return;
-    }
-
-    const ext = path.extname(filePath);
-    const contentType = mimeTypes[ext] || 'text/plain';
-    
-    res.writeHead(200, { 'Content-Type': contentType });
-    res.end(data);
-  });
-});
-
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Dashboard demo server running at http://0.0.0.0:${port}`);
-});
