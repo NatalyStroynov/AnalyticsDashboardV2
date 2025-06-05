@@ -1,0 +1,51 @@
+<div class="dashboard-selector">
+  <mat-form-field appearance="outline" class="dashboard-select">
+    <mat-label>Dashboard</mat-label>
+    <mat-select 
+      [value]="currentDashboard()?.id || ''"
+      (selectionChange)="onDashboardChange($event.value)">
+      <mat-option 
+        *ngFor="let dashboard of dashboards(); trackBy: trackDashboard"
+        [value]="dashboard.id">
+        {{ dashboard.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button 
+    mat-icon-button
+    (click)="createNewDashboard()"
+    matTooltip="Create New Dashboard"
+    class="create-btn">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<!-- Create Dashboard Form -->
+<div *ngIf="showCreateForm()" class="create-form">
+  <mat-form-field appearance="outline" class="name-input">
+    <mat-label>Dashboard Name</mat-label>
+    <input 
+      matInput
+      [(ngModel)]="newDashboardName"
+      (keyup.enter)="onCreateDashboard()"
+      placeholder="Enter dashboard name">
+  </mat-form-field>
+  
+  <div class="form-actions">
+    <button 
+      mat-button 
+      (click)="onCancelCreate()"
+      class="cancel-btn">
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="onCreateDashboard()"
+      [disabled]="!newDashboardName().trim()"
+      class="create-btn">
+      Create
+    </button>
+  </div>
+</div>

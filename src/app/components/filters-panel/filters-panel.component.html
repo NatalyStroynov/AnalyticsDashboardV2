@@ -1,0 +1,196 @@
+<div class="filters-panel">
+  <div class="panel-header">
+    <h3>Filters</h3>
+    <div class="header-actions">
+      <button 
+        mat-icon-button
+        (click)="addFilter()"
+        matTooltip="Add Filter"
+        class="add-filter-btn">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button 
+        mat-icon-button
+        (click)="clearAllFilters()"
+        matTooltip="Clear All Filters"
+        [disabled]="appliedFilters().length === 0"
+        class="clear-filters-btn">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Filter Form -->
+  <div *ngIf="showAddFilter()" class="add-filter-form">
+    <mat-form-field appearance="outline" class="field-select">
+      <mat-label>Field</mat-label>
+      <mat-select [(ngModel)]="newFilterField">
+        <mat-option 
+          *ngFor="let field of availableFields()"
+          [value]="field">
+          {{ formatFieldLabel(field) }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="type-select">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="newFilterType">
+        <mat-option 
+          *ngFor="let type of filterTypes"
+          [value]="type">
+          {{ type | titlecase }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="operator-select">
+      <mat-label>Operator</mat-label>
+      <mat-select [(ngModel)]="newFilterOperator">
+        <mat-option 
+          *ngFor="let operator of getOperatorsForType(newFilterType())"
+          [value]="operator">
+          {{ getOperatorLabel(operator) }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button 
+        mat-button
+        (click)="onCancelAddFilter()"
+        class="cancel-btn">
+        Cancel
+      </button>
+      <button 
+        mat-raised-button
+        color="primary"
+        (click)="onCreateFilter()"
+        [disabled]="!newFilterField().trim()"
+        class="create-btn">
+        Add
+      </button>
+    </div>
+  </div>
+
+  <!-- Applied Filters -->
+  <div class="filters-list">
+    <div 
+      *ngFor="let filter of appliedFilters(); trackBy: trackFilter"
+      class="filter-item"
+      [class.disabled]="!filter.enabled">
+      
+      <div class="filter-header">
+        <mat-checkbox
+          [checked]="filter.enabled"
+          (change)="toggleFilter(filter.id)"
+          class="filter-toggle">
+        </mat-checkbox>
+        
+        <span class="filter-label">{{ filter.label }}</span>
+        
+        <button 
+          mat-icon-button
+          (click)="removeFilter(filter.id)"
+          matTooltip="Remove Filter"
+          class="remove-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="filter-controls" *ngIf="filter.enabled">
+        <!-- Operator Selection -->
+        <mat-form-field appearance="outline" class="operator-field">
+          <mat-label>Operator</mat-label>
+          <mat-select 
+            [value]="filter.operator"
+            (selectionChange)="onFilterOperatorChange(filter.id, $event.value)">
+            <mat-option 
+              *ngFor="let operator of getOperatorsForType(filter.type)"
+              [value]="operator">
+              {{ getOperatorLabel(operator) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Value Input Based on Filter Type -->
+        <div class="value-input">
+          <!-- Text Input -->
+          <mat-form-field 
+            *ngIf="filter.type === 'text'"
+            appearance="outline">
+            <mat-label>Value</mat-label>
+            <input 
+              matInput
+              [value]="filter.value"
+              (input)="onFilterValueChange(filter.id, $event.target.value)"
+              placeholder="Enter text">
+          </mat-form-field>
+
+          <!-- Number Input -->
+          <mat-form-field 
+            *ngIf="filter.type === 'number'"
+            appearance="outline">
+            <mat-label>Value</mat-label>
+            <input 
+              matInput
+              type="number"
+              [value]="filter.value"
+              (input)="onFilterValueChange(filter.id, +$event.target.value)"
+              placeholder="Enter number">
+          </mat-form-field>
+
+          <!-- Date Input -->
+          <mat-form-field 
+            *ngIf="filter.type === 'date'"
+            appearance="outline">
+            <mat-label>Date</mat-label>
+            <input 
+              matInput
+              type="date"
+              [value]="filter.value"
+              (input)="onFilterValueChange(filter.id, $event.target.value)">
+          </mat-form-field>
+
+          <!-- Boolean Input -->
+          <mat-checkbox
+            *ngIf="filter.type === 'boolean'"
+            [checked]="filter.value"
+            (change)="onFilterValueChange(filter.id, $event.checked)"
+            class="boolean-input">
+            {{ filter.value ? 'True' : 'False' }}
+          </mat-checkbox>
+
+          <!-- Range Input -->
+          <div *ngIf="filter.type === 'range'" class="range-input">
+            <mat-form-field appearance="outline">
+              <mat-label>Min</mat-label>
+              <input 
+                matInput
+                type="number"
+                [value]="filter.value[0]"
+                (input)="onFilterValueChange(filter.id, [+$event.target.value, filter.value[1]])"
+                placeholder="Min value">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Max</mat-label>
+              <input 
+                matInput
+                type="number"
+                [value]="filter.value[1]"
+                (input)="onFilterValueChange(filter.id, [filter.value[0], +$event.target.value])"
+                placeholder="Max value">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="appliedFilters().length === 0" class="empty-filters">
+    <mat-icon>filter_list_off</mat-icon>
+    <p>No filters applied</p>
+    <small>Add filters to refine your data</small>
+  </div>
+</div>
