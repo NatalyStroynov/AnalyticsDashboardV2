@@ -8,5 +8,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@angular-devkit/build-angular": "^19.2.14",
+    "@angular/cli": "^17.3.17",
+    "typescript": "^5.8.3"
+  }
 }
