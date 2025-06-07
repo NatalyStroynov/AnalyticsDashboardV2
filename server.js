@@ -830,25 +830,59 @@ function createDemoHTML() {
                 var chartId = 'chart' + (index + 1);
                 var widget = document.createElement('div');
                 widget.className = 'chart-widget';
-                widget.innerHTML = 
-                    '<div class="widget-header">' +
-                        '<div class="widget-title">' + chartTitle + '</div>' +
-                        '<div class="widget-actions">' +
-                            '<div class="chart-actions">' +
-                                '<button class="action-btn" onclick="toggleChartDropdown(\'' + chartId + '\')" title="More options">' +
-                                    '<span class="material-icons">more_vert</span>' +
-                                '</button>' +
-                                '<div class="chart-dropdown" id="dropdown-' + chartId + '">' +
-                                    '<button class="chart-dropdown-item" onclick="editChart(\'' + chartId + '\')">Редактировать чарт</button>' +
-                                    '<button class="chart-dropdown-item" onclick="deleteChart(\'' + chartId + '\')">Удалить чарт</button>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="chart-container">' +
-                        '<canvas id="' + chartId + '"></canvas>' +
-                    '</div>';
                 
+                // Create widget header
+                var header = document.createElement('div');
+                header.className = 'widget-header';
+                
+                var title = document.createElement('div');
+                title.className = 'widget-title';
+                title.textContent = chartTitle;
+                
+                var actions = document.createElement('div');
+                actions.className = 'widget-actions';
+                
+                var chartActions = document.createElement('div');
+                chartActions.className = 'chart-actions';
+                
+                var actionBtn = document.createElement('button');
+                actionBtn.className = 'action-btn';
+                actionBtn.title = 'More options';
+                actionBtn.onclick = function() { toggleChartDropdown(chartId); };
+                actionBtn.innerHTML = '<span class="material-icons">more_vert</span>';
+                
+                var dropdown = document.createElement('div');
+                dropdown.className = 'chart-dropdown';
+                dropdown.id = 'dropdown-' + chartId;
+                
+                var editBtn = document.createElement('button');
+                editBtn.className = 'chart-dropdown-item';
+                editBtn.textContent = 'Редактировать чарт';
+                editBtn.onclick = function() { editChart(chartId); };
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'chart-dropdown-item';
+                deleteBtn.textContent = 'Удалить чарт';
+                deleteBtn.onclick = function() { deleteChart(chartId); };
+                
+                dropdown.appendChild(editBtn);
+                dropdown.appendChild(deleteBtn);
+                chartActions.appendChild(actionBtn);
+                chartActions.appendChild(dropdown);
+                actions.appendChild(chartActions);
+                header.appendChild(title);
+                header.appendChild(actions);
+                
+                // Create chart container
+                var container = document.createElement('div');
+                container.className = 'chart-container';
+                
+                var canvas = document.createElement('canvas');
+                canvas.id = chartId;
+                container.appendChild(canvas);
+                
+                widget.appendChild(header);
+                widget.appendChild(container);
                 grid.appendChild(widget);
             });
         }
