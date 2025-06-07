@@ -43,12 +43,13 @@ function createDemoHTML() {
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #4a4a4a;
+            position: relative;
+            z-index: 100;
         }
         
-        .dashboard-selector-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .dashboard-selector-wrapper {
+            position: relative;
+            z-index: 200;
         }
 
         .dashboard-selector {
@@ -57,30 +58,55 @@ function createDemoHTML() {
             color: white;
             padding: 8px 12px;
             border-radius: 4px;
-            min-width: 250px;
-        }
-
-        .add-dashboard-btn-small {
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            background: #d4a421;
-            border: none;
-            color: #2d2d2d;
+            min-width: 280px;
+            max-width: 350px;
+            font-size: 14px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .add-dashboard-btn-small:hover {
-            background: #e6b82e;
-            transform: scale(1.05);
+        .dashboard-selector:focus {
+            outline: none;
+            border-color: #d4a421;
+            box-shadow: 0 0 0 2px rgba(212, 164, 33, 0.2);
         }
 
-        .add-dashboard-btn-small .material-icons {
-            font-size: 18px;
+        .dashboard-selector option {
+            background: #2d2d2d;
+            color: white;
+            padding: 8px 12px;
+        }
+
+        .dashboard-selector option.create-option {
+            background: #3a4a3a;
+            color: #d4a421;
+            font-weight: 500;
+            border-top: 1px solid #555;
+        }
+
+        .dashboard-selector option.create-option:hover {
+            background: #4a5a4a;
+        }
+
+        /* Ensure dropdown doesn't get clipped */
+        .dashboard-selector {
+            overflow: visible;
+        }
+
+        .dashboard-selector-wrapper {
+            overflow: visible;
+        }
+
+        /* Fix for select dropdown in some browsers */
+        select.dashboard-selector {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ccc' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            padding-right: 35px;
         }
 
         /* Chart action dropdown menu */
@@ -490,15 +516,13 @@ function createDemoHTML() {
 <body>
     <!-- Top Navigation Bar -->
     <div class="top-bar">
-        <div class="dashboard-selector-container">
-            <select class="dashboard-selector" id="dashboardSelect" onchange="switchDashboard(this.value)">
+        <div class="dashboard-selector-wrapper">
+            <select class="dashboard-selector" id="dashboardSelect" onchange="handleDashboardSelection(this.value)">
                 <option value="simulation">Simulation Field Model Dashboard</option>
                 <option value="lead-contact">Lead Contacts Dashboard</option>
                 <option value="fiber-tracts">Fiber Tracts Dashboard</option>
+                <option value="create-new" class="create-option">+ Create New Dashboard</option>
             </select>
-            <button class="add-dashboard-btn-small" onclick="openCreateDashboardModal()" title="Создать новый дашборд">
-                <span class="material-icons">add</span>
-            </button>
         </div>
         
         <div class="top-controls">
@@ -796,6 +820,18 @@ function createDemoHTML() {
         document.addEventListener('DOMContentLoaded', function() {
             initDashboard('simulation');
         });
+
+        // Handle dashboard selection from dropdown
+        function handleDashboardSelection(value) {
+            if (value === 'create-new') {
+                // Reset selector to current dashboard
+                document.getElementById('dashboardSelect').value = currentDashboard;
+                // Open create dashboard modal
+                openCreateDashboardModal();
+            } else {
+                switchDashboard(value);
+            }
+        }
 
         // Dashboard switching function
         function switchDashboard(dashboardId) {
