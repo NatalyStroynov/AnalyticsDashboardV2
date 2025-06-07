@@ -298,14 +298,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Destroy existing chart if it exists
+    const existingChart = (canvas as any).chart;
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     import('chart.js').then(({ Chart, registerables }) => {
       Chart.register(...registerables);
       
-      new Chart(ctx, {
+      const newChart = new Chart(ctx, {
         type: chart.type as any,
         data: chart.data,
         options: chart.options
       });
+      
+      // Store reference to chart instance on canvas for future cleanup
+      (canvas as any).chart = newChart;
     });
   }
 
@@ -421,17 +430,42 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (this.editingChart.title.trim()) {
       const chartIndex = this.currentDashboard.charts.findIndex(c => c.id === this.editingChart.id);
       if (chartIndex !== -1) {
+        const originalType = this.currentDashboard.charts[chartIndex].type;
+        
+        // Update title and type
         this.currentDashboard.charts[chartIndex].title = this.editingChart.title.trim();
         this.currentDashboard.charts[chartIndex].type = this.editingChart.type;
         
-        // Update chart options for new type
-        if (this.editingChart.type !== this.currentDashboard.charts[chartIndex].type) {
+        // Always update data and options when type changes
+        if (this.editingChart.type !== originalType) {
           this.currentDashboard.charts[chartIndex].data = this.generateSampleDataForType(this.editingChart.type);
           this.currentDashboard.charts[chartIndex].options = this.generateChartOptionsForType(this.editingChart.type);
         }
         
         this.closeEditChartModal();
-        setTimeout(() => this.initializeCharts(), 100);
+        
+        // Destroy existing chart and recreate
+        setTimeout(() => {
+          this.destroyExistingChart(this.editingChart.id);
+          this.initializeCharts();
+        }, 100);
+      }
+    }
+  }
+
+  private destroyExistingChart(chartId: string): void {
+    const canvas = document.getElementById(chartId) as HTMLCanvasElement;
+    if (canvas) {
+      // Clear the canvas context
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      // Remove any existing Chart.js instance
+      const existingChart = (canvas as any).chart;
+      if (existingChart) {
+        existingChart.destroy();
+        delete (canvas as any).chart;
       }
     }
   }
