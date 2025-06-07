@@ -48,7 +48,15 @@ export class ChartDirective implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    // Ensure canvas has proper dimensions
+    const canvas = this.elementRef.nativeElement;
+    if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
+      canvas.style.width = '100%';
+      canvas.style.height = '220px';
+    }
+
     console.log('Creating chart with data:', this.chartData);
+    console.log('Canvas dimensions:', canvas.offsetWidth, 'x', canvas.offsetHeight);
 
     const defaultOptions = {
       responsive: true,
@@ -100,6 +108,13 @@ export class ChartDirective implements OnInit, OnChanges, OnDestroy {
     };
 
     this.chart = new Chart(ctx, config);
+    
+    // Force chart resize after creation
+    setTimeout(() => {
+      if (this.chart) {
+        this.chart.resize();
+      }
+    }, 100);
   }
 
   private updateChart(): void {

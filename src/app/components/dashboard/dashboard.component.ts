@@ -4,11 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Chart as ChartJS, registerables } from 'chart.js';
 
 import { ChartDirective } from '../../directives/chart.directive';
 import { DashboardState, Chart, Dashboard, FilterClause } from '../../store/dashboard.state';
 import * as DashboardActions from '../../store/dashboard.actions';
 import * as DashboardSelectors from '../../store/dashboard.selectors';
+
+// Register Chart.js components
+ChartJS.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
@@ -124,18 +128,54 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       existingChart.destroy();
     }
 
-    import('chart.js').then(({ Chart, registerables }) => {
-      Chart.register(...registerables);
-      
-      const newChart = new Chart(ctx, {
-        type: chart.type as any,
-        data: chart.data,
-        options: chart.options
-      });
-      
-      // Store reference to chart instance on canvas for future cleanup
-      (canvas as any).chart = newChart;
+    console.log('Rendering chart:', chart.title, 'Type:', chart.type);
+
+    const defaultOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#ffffff'
+          }
+        }
+      },
+      scales: chart.type !== 'pie' && chart.type !== 'doughnut' ? {
+        x: {
+          ticks: {
+            color: '#ffffff'
+          },
+          grid: {
+            color: '#4a4a4a'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#ffffff'
+          },
+          grid: {
+            color: '#4a4a4a'
+          }
+        }
+      } : {}
+    };
+
+    const newChart = new ChartJS(ctx, {
+      type: chart.type as any,
+      data: chart.data,
+      options: {
+        ...defaultOptions,
+        ...chart.options
+      }
     });
+    
+    // Store reference to chart instance on canvas for future cleanup
+    (canvas as any).chart = newChart;
+    
+    // Force resize after creation
+    setTimeout(() => {
+      newChart.resize();
+    }, 50);
   }
 
   // Dashboard Management
