@@ -1449,13 +1449,21 @@ function createDemoHTML() {
                     var titleElement = widget.querySelector('.widget-title');
                     var currentTitle = titleElement ? titleElement.textContent : 'Chart';
                     
-                    // Pre-populate the modal with current chart data
-                    document.getElementById('chartTitle').value = currentTitle;
-                    
                     // Store the chart ID being edited
                     window.editingChartId = chartId;
                     
+                    // Open modal first
                     openModal('chartModal');
+                    
+                    // Then populate the fields with a small delay to ensure DOM is ready
+                    setTimeout(function() {
+                        var titleInput = document.getElementById('chartTitle');
+                        if (titleInput) {
+                            titleInput.value = currentTitle;
+                            titleInput.focus();
+                        }
+                    }, 50);
+                    
                     showNotification('Редактирование чарта: ' + currentTitle);
                 } else {
                     showNotification('Чарт не найден для редактирования');
@@ -1556,10 +1564,7 @@ function createDemoHTML() {
             openModal('chartModal');
         }
 
-        function editChart(chartId) {
-            showNotification('Editing chart ' + chartId);
-            openModal('chartModal');
-        }
+
 
         function duplicateChart(chartId) {
             var grid = document.querySelector('.dashboard-grid');
