@@ -90,14 +90,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeCharts(): void {
-    if (!this.currentDashboard) return;
+    if (!this.currentDashboard || !this.currentDashboard.charts) return;
     
-    this.currentDashboard.charts.forEach(chart => {
-      const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
-      if (canvas) {
-        this.renderChartOnCanvas(canvas, chart);
-      }
-    });
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      this.currentDashboard!.charts.forEach(chart => {
+        const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
+        if (canvas && canvas.getContext) {
+          this.renderChartOnCanvas(canvas, chart);
+        } else {
+          console.warn(`Canvas element not found for chart: ${chart.id}`);
+        }
+      });
+    }, 50);
   }
 
   private initializeChartsFromArray(charts: Chart[]): void {

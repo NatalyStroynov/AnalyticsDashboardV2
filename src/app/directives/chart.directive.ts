@@ -18,7 +18,10 @@ export class ChartDirective implements OnInit, OnChanges, OnDestroy {
   constructor(private elementRef: ElementRef<HTMLCanvasElement>) {}
 
   ngOnInit(): void {
-    this.createChart();
+    // Delay chart creation to ensure DOM is ready
+    setTimeout(() => {
+      this.createChart();
+    }, 100);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -34,46 +37,64 @@ export class ChartDirective implements OnInit, OnChanges, OnDestroy {
   }
 
   private createChart(): void {
-    if (!this.chartData) return;
+    if (!this.chartData) {
+      console.warn('ChartDirective: No chart data provided');
+      return;
+    }
 
     const ctx = this.elementRef.nativeElement.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.warn('ChartDirective: Could not get canvas context');
+      return;
+    }
+
+    console.log('Creating chart with data:', this.chartData);
+
+    const defaultOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#ffffff'
+          }
+        },
+        title: {
+          display: true,
+          color: '#ffffff'
+        }
+      }
+    };
+
+    if (this.chartType !== 'pie' && this.chartType !== 'doughnut') {
+      (defaultOptions as any).scales = {
+        x: {
+          ticks: {
+            color: '#ffffff'
+          },
+          grid: {
+            color: '#4a4a4a'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#ffffff'
+          },
+          grid: {
+            color: '#4a4a4a'
+          }
+        }
+      };
+    }
 
     const config: ChartConfiguration = {
       type: this.chartType as any,
       data: this.chartData,
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: '#ffffff'
-            }
-          },
-          title: {
-            display: true,
-            color: '#ffffff'
-          }
-        },
-        scales: this.chartType !== 'pie' && this.chartType !== 'doughnut' ? {
-          x: {
-            ticks: {
-              color: '#ffffff'
-            },
-            grid: {
-              color: '#4a4a4a'
-            }
-          },
-          y: {
-            ticks: {
-              color: '#ffffff'
-            },
-            grid: {
-              color: '#4a4a4a'
-            }
-          }
-        } : {},
+        ...defaultOptions,
         ...this.chartOptions
       }
     };
