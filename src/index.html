@@ -204,6 +204,170 @@
       font-family: 'Material Icons';
       font-size: 20px;
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: #3a3a3a;
+      border-radius: 12px;
+      padding: 24px;
+      min-width: 400px;
+      max-width: 500px;
+      border: 1px solid #555;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-content {
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      color: #ccc;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #2d2d2d;
+      border: 1px solid #555;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: #d4a421;
+      box-shadow: 0 0 0 2px rgba(212, 164, 33, 0.2);
+    }
+
+    .form-select option {
+      background: #2d2d2d;
+      color: white;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #d4a421;
+      color: #2d2d2d;
+    }
+
+    .btn-primary:hover {
+      background: #e6b82e;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #555;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #666;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .option-card {
+      background: #2d2d2d;
+      border: 2px solid #555;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-card:hover {
+      border-color: #d4a421;
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      border-color: #d4a421;
+      background: rgba(212, 164, 33, 0.1);
+    }
+
+    .option-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #d4a421;
+    }
+
+    .option-title {
+      font-weight: 600;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .option-desc {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .info-text {
+      background: rgba(212, 164, 33, 0.1);
+      border: 1px solid rgba(212, 164, 33, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      color: #d4a421;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -458,89 +622,300 @@
 
     // Create new dashboard
     function createNewDashboard() {
-      const name = prompt('Enter dashboard name:');
-      if (name && name.trim()) {
-        alert(`Dashboard "${name}" would be created here`);
+      showCreateDashboardModal();
+    }
+
+    function showCreateDashboardModal() {
+      const modal = createModal('create-dashboard', 'Create New Dashboard', `
+        <div class="modal-content">
+          <div class="info-text">
+            <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">dashboard</span>
+            Create a new dashboard to organize your charts and data visualizations
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Dashboard Name</label>
+            <input type="text" class="form-input" id="dashboardName" placeholder="Enter dashboard name" value="">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Description (Optional)</label>
+            <input type="text" class="form-input" id="dashboardDesc" placeholder="Brief description of this dashboard">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="cancelCreateDashboard()">Cancel</button>
+          <button class="btn btn-primary" onclick="confirmCreateDashboard()">
+            <span class="material-icons">add</span>
+            Create Dashboard
+          </button>
+        </div>
+      `);
+    }
+
+    function confirmCreateDashboard() {
+      const name = document.getElementById('dashboardName').value.trim();
+      const description = document.getElementById('dashboardDesc').value.trim();
+      
+      if (!name) {
+        showNotification('Please enter a dashboard name', 'warning');
+        return;
       }
-      // Reset selector
+      
+      const newId = `dashboard-${Date.now()}`;
+      dashboards[newId] = {
+        name: name,
+        charts: []
+      };
+      
+      // Add option to selector
+      const selector = document.getElementById('dashboardSelector');
+      const newOption = document.createElement('option');
+      newOption.value = newId;
+      newOption.textContent = name;
+      selector.insertBefore(newOption, selector.lastElementChild);
+      
+      // Switch to new dashboard
+      currentDashboard = newId;
+      selector.value = newId;
+      loadDashboard(currentDashboard);
+      
+      closeModal();
+      showNotification(`Dashboard "${name}" created successfully!`, 'success');
+    }
+
+    function cancelCreateDashboard() {
       document.getElementById('dashboardSelector').value = currentDashboard;
+      closeModal();
     }
 
     // Add new chart function
     function addNewChart() {
-      const chartTypes = ['bar', 'line', 'pie', 'doughnut'];
-      const chartType = prompt(`Select chart type:\n1. Bar\n2. Line\n3. Pie\n4. Doughnut\n\nEnter number (1-4):`);
+      showAddChartModal();
+    }
+
+    // Show add chart modal
+    function showAddChartModal() {
+      const modal = createModal('add-chart', 'Add New Chart', `
+        <div class="modal-content">
+          <div class="info-text">
+            <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">info</span>
+            Choose a chart type and enter a title for your new visualization
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Chart Type</label>
+            <div class="option-grid">
+              <div class="option-card" data-type="bar">
+                <div class="option-icon">📊</div>
+                <div class="option-title">Bar Chart</div>
+                <div class="option-desc">Compare values</div>
+              </div>
+              <div class="option-card" data-type="line">
+                <div class="option-icon">📈</div>
+                <div class="option-title">Line Chart</div>
+                <div class="option-desc">Show trends</div>
+              </div>
+              <div class="option-card" data-type="pie">
+                <div class="option-icon">🥧</div>
+                <div class="option-title">Pie Chart</div>
+                <div class="option-desc">Show proportions</div>
+              </div>
+              <div class="option-card" data-type="doughnut">
+                <div class="option-icon">🍩</div>
+                <div class="option-title">Doughnut</div>
+                <div class="option-desc">Modern pie chart</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Chart Title</label>
+            <input type="text" class="form-input" id="chartTitle" placeholder="Enter chart title" value="New Chart">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="createNewChart()">
+            <span class="material-icons">add</span>
+            Create Chart
+          </button>
+        </div>
+      `);
       
-      if (!chartType || chartType < 1 || chartType > 4) {
-        return;
-      }
+      // Add click handlers for chart type selection
+      modal.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', function() {
+          modal.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
       
-      const selectedType = chartTypes[parseInt(chartType) - 1];
-      const title = prompt('Enter chart title:') || 'New Chart';
+      // Select first option by default
+      modal.querySelector('.option-card').classList.add('selected');
+    }
+
+    function createNewChart() {
+      const selectedCard = document.querySelector('.option-card.selected');
+      if (!selectedCard) return;
+      
+      const chartType = selectedCard.dataset.type;
+      const title = document.getElementById('chartTitle').value.trim() || 'New Chart';
       
       const newChart = {
         id: `chart-${Date.now()}`,
         title: title,
-        type: selectedType
+        type: chartType
       };
       
-      // Add to current dashboard
       dashboards[currentDashboard].charts.push(newChart);
-      
-      // Re-render dashboard
       loadDashboard(currentDashboard);
-      
-      alert(`${title} chart added successfully!`);
+      closeModal();
+      showNotification(`${title} chart added successfully!`, 'success');
     }
 
     // Show data sources
     function showDataSources() {
-      alert(`Available Data Sources:\n\n• Patient Records\n• Treatment Data\n• Resource Utilization\n• Lead Management\n• Contact Information\n• Network Performance\n• Fiber Analytics`);
-    }
-
-    // Toggle filters panel
-    let filtersVisible = false;
-    function toggleFiltersPanel() {
-      filtersVisible = !filtersVisible;
-      
-      if (filtersVisible) {
-        showFiltersModal();
-      }
-    }
-
-    // Show filters modal
-    function showFiltersModal() {
-      const filterOptions = `
-Available Filters:
-
-📊 Data Filters:
-• Date Range
-• Category
-• Status
-• Region
-
-🎯 Chart Filters:
-• Chart Type
-• Data Source
-• Time Period
-• Aggregation Level
-
-Would you like to apply any filters?
-      `;
-      
-      const applyFilters = confirm(filterOptions);
-      
-      if (applyFilters) {
-        const filterType = prompt(`Select filter type:\n1. Date Range\n2. Category\n3. Status\n4. Region\n\nEnter number (1-4):`);
+      const modal = createModal('data-sources', 'Available Data Sources', `
+        <div class="modal-content">
+          <div class="info-text">
+            <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">storage</span>
+            Connect to various data sources for your dashboard visualizations
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px;">
+            <div class="option-card">
+              <div class="option-icon">🏥</div>
+              <div class="option-title">Patient Records</div>
+              <div class="option-desc">Medical data & records</div>
+            </div>
+            <div class="option-card">
+              <div class="option-icon">💊</div>
+              <div class="option-title">Treatment Data</div>
+              <div class="option-desc">Treatment outcomes</div>
+            </div>
+            <div class="option-card">
+              <div class="option-icon">📊</div>
+              <div class="option-title">Resource Utilization</div>
+              <div class="option-desc">Hospital resources</div>
+            </div>
+            <div class="option-card">
+              <div class="option-icon">👥</div>
+              <div class="option-title">Lead Management</div>
+              <div class="option-desc">Sales leads & prospects</div>
+            </div>
+            <div class="option-card">
+              <div class="option-icon">📞</div>
+              <div class="option-title">Contact Information</div>
+              <div class="option-desc">Customer contacts</div>
+            </div>
+            <div class="option-card">
+              <div class="option-icon">🌐</div>
+              <div class="option-title">Network Performance</div>
+              <div class="option-desc">Network analytics</div>
+            </div>
+          </div>
+        </div>
         
-        if (filterType) {
-          const filterValue = prompt('Enter filter value:');
-          if (filterValue) {
-            alert(`Filter applied: ${['Date Range', 'Category', 'Status', 'Region'][parseInt(filterType) - 1]} = ${filterValue}`);
-            // Here you would implement actual filtering logic
-          }
-        }
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+          <button class="btn btn-primary" onclick="connectDataSource()">
+            <span class="material-icons">link</span>
+            Connect Source
+          </button>
+        </div>
+      `);
+    }
+
+    function connectDataSource() {
+      closeModal();
+      showNotification('Data source connection feature coming soon!', 'info');
+    }
+
+    // Show filters panel
+    function toggleFiltersPanel() {
+      showFiltersModal();
+    }
+
+    function showFiltersModal() {
+      const modal = createModal('filters', 'Dashboard Filters', `
+        <div class="modal-content">
+          <div class="info-text">
+            <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">filter_list</span>
+            Apply filters to refine your dashboard data and focus on specific insights
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Filter Type</label>
+            <div class="option-grid">
+              <div class="option-card" data-filter="date">
+                <div class="option-icon">📅</div>
+                <div class="option-title">Date Range</div>
+                <div class="option-desc">Time period filter</div>
+              </div>
+              <div class="option-card" data-filter="category">
+                <div class="option-icon">📂</div>
+                <div class="option-title">Category</div>
+                <div class="option-desc">Data categories</div>
+              </div>
+              <div class="option-card" data-filter="status">
+                <div class="option-icon">✅</div>
+                <div class="option-title">Status</div>
+                <div class="option-desc">Record status</div>
+              </div>
+              <div class="option-card" data-filter="region">
+                <div class="option-icon">🌍</div>
+                <div class="option-title">Region</div>
+                <div class="option-desc">Geographic filter</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Filter Value</label>
+            <input type="text" class="form-input" id="filterValue" placeholder="Enter filter value">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="applyFilter()">
+            <span class="material-icons">check</span>
+            Apply Filter
+          </button>
+        </div>
+      `);
+      
+      // Add filter type selection
+      modal.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', function() {
+          modal.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+    }
+
+    function applyFilter() {
+      const selectedFilter = document.querySelector('.option-card.selected');
+      const filterValue = document.getElementById('filterValue').value.trim();
+      
+      if (!selectedFilter) {
+        showNotification('Please select a filter type', 'warning');
+        return;
       }
+      
+      if (!filterValue) {
+        showNotification('Please enter a filter value', 'warning');
+        return;
+      }
+      
+      const filterType = selectedFilter.dataset.filter;
+      const filterName = selectedFilter.querySelector('.option-title').textContent;
+      
+      closeModal();
+      showNotification(`Filter applied: ${filterName} = ${filterValue}`, 'success');
     }
 
     // Add chart action menu functionality
@@ -616,6 +991,99 @@ Would you like to apply any filters?
         link.click();
         alert('Chart exported successfully!');
       }
+    }
+
+    // Modal utility functions
+    function createModal(id, title, content) {
+      // Remove existing modal if any
+      const existingModal = document.querySelector('.modal-overlay');
+      if (existingModal) {
+        existingModal.remove();
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.innerHTML = `
+        <div class="modal" id="${id}">
+          <div class="modal-title">
+            <span class="material-icons">dashboard</span>
+            ${title}
+          </div>
+          ${content}
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Close on overlay click
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          closeModal();
+        }
+      });
+
+      // Close on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeModal();
+        }
+      });
+
+      return overlay.querySelector('.modal');
+    }
+
+    function closeModal() {
+      const overlay = document.querySelector('.modal-overlay');
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      
+      const icons = {
+        success: 'check_circle',
+        error: 'error',
+        warning: 'warning',
+        info: 'info'
+      };
+
+      notification.innerHTML = `
+        <span class="material-icons">${icons[type] || 'info'}</span>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+          <span class="material-icons">close</span>
+        </button>
+      `;
+
+      // Add notification styles
+      Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        background: type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#2196f3',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        zIndex: '1001',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        minWidth: '300px'
+      });
+
+      document.body.appendChild(notification);
+
+      // Auto remove after 4 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, 4000);
     }
 
     // Initialize when page loads
