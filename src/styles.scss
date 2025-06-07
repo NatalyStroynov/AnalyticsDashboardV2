@@ -1,57 +1,5 @@
-@import '@angular/material/theming';
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-@include mat.core();
-
-// Define custom dark palette
-$dark-primary: mat.define-palette((
-  50: #fef7e0,
-  100: #fdeab3,
-  200: #fcdd80,
-  300: #fbd04d,
-  400: #fac626,
-  500: #d4a421,
-  600: #c1931e,
-  700: #ab801a,
-  800: #956e16,
-  900: #70530f,
-  A100: #fdeab3,
-  A200: #fcdd80,
-  A400: #fac626,
-  A700: #ab801a,
-  contrast: (
-    50: #2d2d2d,
-    100: #2d2d2d,
-    200: #2d2d2d,
-    300: #2d2d2d,
-    400: #2d2d2d,
-    500: #2d2d2d,
-    600: #ffffff,
-    700: #ffffff,
-    800: #ffffff,
-    900: #ffffff,
-    A100: #2d2d2d,
-    A200: #2d2d2d,
-    A400: #2d2d2d,
-    A700: #ffffff,
-  )
-), 500);
-
-$dark-accent: mat.define-palette(mat.$teal-palette, 500);
-$dark-warn: mat.define-palette(mat.$red-palette);
-
-$dark-theme: mat.define-dark-theme((
-  color: (
-    primary: $dark-primary,
-    accent: $dark-accent,
-    warn: $dark-warn,
-  ),
-  typography: mat.define-typography-config($font-family: 'Inter, sans-serif'),
-  density: 0,
-));
-
-@include mat.all-component-themes($dark-theme);
 
 * {
   margin: 0;
@@ -67,64 +15,198 @@ html, body {
   overflow-x: hidden;
 }
 
-// Global dark theme overrides
-.mat-mdc-dialog-surface {
-  background: #3a3a3a !important;
-  color: white !important;
+.dashboard-container {
+  background: #2d2d2d;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-.mat-mdc-dialog-title {
-  color: white !important;
+.top-bar {
+  background: #3a3a3a;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #4a4a4a;
+  position: relative;
+  z-index: 100;
 }
 
-.mat-mdc-form-field {
-  .mat-mdc-text-field-wrapper {
-    background: #2d2d2d !important;
-  }
-  
-  .mat-mdc-form-field-outline {
-    color: #555 !important;
-  }
-  
-  .mat-mdc-form-field-outline-thick {
-    color: #d4a421 !important;
-  }
-  
-  .mat-mdc-floating-label {
-    color: #ccc !important;
-  }
-  
-  .mat-mdc-form-field-input-control {
-    color: white !important;
-  }
-  
-  input::placeholder {
-    color: #888 !important;
-  }
-}
-
-.mat-mdc-raised-button {
-  &.mat-primary {
-    background: #d4a421 !important;
-    color: #2d2d2d !important;
-    
-    &:hover {
-      background: #e6b82e !important;
-    }
-  }
-  
-  &:not(.mat-primary) {
-    background: #555 !important;
-    color: white !important;
-    
-    &:hover {
-      background: #666 !important;
-    }
-  }
-}
-
-.mat-mdc-snack-bar-container {
-  background: #3a3a3a !important;
-  color: white !important;
+.dashboard-selector {
+  background: #2d2d2d;
   border: 1px solid #555;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 280px;
+  max-width: 350px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dashboard-selector:focus {
+  outline: none;
+  border-color: #d4a421;
+  box-shadow: 0 0 0 2px rgba(212, 164, 33, 0.2);
+}
+
+.dashboard-selector option {
+  background: #2d2d2d;
+  color: white;
+  padding: 8px 12px;
+}
+
+.create-option {
+  background: #3a4a3a !important;
+  color: #d4a421 !important;
+  font-weight: 500;
+  border-top: 1px solid #555;
+}
+
+.top-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.top-btn, .filters-btn {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.top-btn:hover, .filters-btn:hover {
+  background: #666;
+}
+
+.filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.main-container {
+  padding: 20px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.chart-widget {
+  background: #3a3a3a;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 300px;
+  border: 1px solid #4a4a4a;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.chart-widget:hover {
+  border-color: #555;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.widget-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.widget-actions {
+  position: relative;
+}
+
+.action-btn {
+  color: #ccc;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d4a421;
+}
+
+.widget-content {
+  height: 250px;
+  position: relative;
+}
+
+.widget-content canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.empty-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  color: #ccc;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.empty-dashboard h3 {
+  color: #ccc;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.empty-dashboard p {
+  color: #888;
+  font-size: 16px;
+  max-width: 400px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.add-chart-btn {
+  background: #d4a421;
+  color: #2d2d2d;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-chart-btn:hover {
+  background: #e6b82e;
 }

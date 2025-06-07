@@ -1,72 +1,83 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-
 import { DashboardService } from '../../services/dashboard.service';
 import { Dashboard } from '../../types/dashboard.types';
 
 @Component({
   selector: 'app-dashboard-selector',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatDialogModule
-  ],
-  templateUrl: './dashboard-selector.component.html',
-  styleUrls: ['./dashboard-selector.component.scss']
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="dashboard-selector-wrapper">
+      <select 
+        class="dashboard-selector"
+        [value]="currentDashboard()?.id || ''"
+        (change)="onDashboardChange($event)">
+        @for (dashboard of dashboards(); track dashboard.id) {
+          <option [value]="dashboard.id">{{ dashboard.name }}</option>
+        }
+        <option value="create-new" class="create-option">+ Create New Dashboard</option>
+      </select>
+    </div>
+  `,
+  styles: [`
+    .dashboard-selector-wrapper {
+      position: relative;
+      z-index: 200;
+    }
+
+    .dashboard-selector {
+      background: #2d2d2d;
+      border: 1px solid #555;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      min-width: 280px;
+      max-width: 350px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .dashboard-selector:focus {
+      outline: none;
+      border-color: #d4a421;
+      box-shadow: 0 0 0 2px rgba(212, 164, 33, 0.2);
+    }
+
+    .dashboard-selector option {
+      background: #2d2d2d;
+      color: white;
+      padding: 8px 12px;
+    }
+
+    .create-option {
+      background: #3a4a3a !important;
+      color: #d4a421 !important;
+      font-weight: 500;
+      border-top: 1px solid #555;
+    }
+  `]
 })
 export class DashboardSelectorComponent {
-  private readonly dashboardService = inject(DashboardService);
-  private readonly dialog = inject(MatDialog);
+  private readonly dashboardService = new DashboardService();
 
   readonly dashboards = this.dashboardService.dashboards;
   readonly currentDashboard = this.dashboardService.currentDashboard;
 
-  readonly showCreateForm = signal(false);
-  readonly newDashboardName = signal('');
-
-  onDashboardChange(dashboardId: string): void {
-    this.dashboardService.selectDashboard(dashboardId);
+  onDashboardChange(event: any): void {
+    const value = event.target.value;
+    if (value === 'create-new') {
+      this.createNewDashboard();
+      return;
+    }
+    this.dashboardService.selectDashboard(value);
   }
 
   createNewDashboard(): void {
-    this.showCreateForm.set(true);
-    this.newDashboardName.set('');
-  }
-
-  onCreateDashboard(): void {
-    const name = this.newDashboardName().trim();
-    if (!name) return;
-
-    this.dashboardService.createDashboard({ name }).subscribe({
-      next: () => {
-        this.showCreateForm.set(false);
-        this.newDashboardName.set('');
-      },
-      error: (error) => {
-        console.error('Failed to create dashboard:', error);
-      }
-    });
-  }
-
-  onCancelCreate(): void {
-    this.showCreateForm.set(false);
-    this.newDashboardName.set('');
-  }
-
-  trackDashboard(index: number, dashboard: Dashboard): string {
-    return dashboard.id;
+    const name = prompt('Enter dashboard name:');
+    if (name?.trim()) {
+      this.dashboardService.createDashboard({ name: name.trim() }).subscribe();
+    }
   }
 }
