@@ -1611,14 +1611,17 @@ function createDemoHTML() {
                             titleElement.textContent = title;
                         }
                         
+                        // Save chart ID in local variable to avoid scope issues
+                        var chartIdToUpdate = window.editingChartId;
+                        
                         // Destroy existing chart and recreate canvas
-                        if (dashboardCharts[window.editingChartId]) {
-                            dashboardCharts[window.editingChartId].destroy();
-                            delete dashboardCharts[window.editingChartId];
+                        if (dashboardCharts[chartIdToUpdate]) {
+                            dashboardCharts[chartIdToUpdate].destroy();
+                            delete dashboardCharts[chartIdToUpdate];
                         }
                         
                         // Get the canvas and its container
-                        var oldCanvas = document.getElementById(window.editingChartId);
+                        var oldCanvas = document.getElementById(chartIdToUpdate);
                         if (oldCanvas) {
                             var container = oldCanvas.parentNode;
                             
@@ -1627,14 +1630,14 @@ function createDemoHTML() {
                             
                             // Create new canvas with same ID
                             var newCanvas = document.createElement('canvas');
-                            newCanvas.id = window.editingChartId;
+                            newCanvas.id = chartIdToUpdate;
                             container.appendChild(newCanvas);
                             
-                            // Create new chart
+                            // Create new chart with new type
                             setTimeout(function() {
-                                console.log('Recreating chart with ID:', window.editingChartId, 'and type:', type);
-                                initDynamicChart(window.editingChartId, type);
-                            }, 100);
+                                console.log('Recreating chart with ID:', chartIdToUpdate, 'and type:', type);
+                                createSingleChart(chartIdToUpdate, type);
+                            }, 200);
                         }
                         
                         showNotification('Чарт "' + title + '" обновлен!');
@@ -1822,6 +1825,110 @@ function createDemoHTML() {
                 data: data,
                 options: options
             });
+        }
+
+        // Universal function to create a single chart with specified type
+        function createSingleChart(chartId, type) {
+            var canvas = document.getElementById(chartId);
+            if (!canvas) {
+                console.error('Canvas not found for chart:', chartId);
+                return;
+            }
+            
+            var ctx = canvas.getContext('2d');
+            
+            var data, options;
+            
+            // Generate appropriate data based on chart type
+            switch(type) {
+                case 'pie':
+                case 'doughnut':
+                    data = {
+                        labels: ['Category A', 'Category B', 'Category C', 'Category D'],
+                        datasets: [{
+                            data: [35, 25, 20, 20],
+                            backgroundColor: ['#2196f3', '#4caf50', '#ff9800', '#e91e63'],
+                            borderWidth: 0
+                        }]
+                    };
+                    options = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#ccc', usePointStyle: true }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'line':
+                    data = {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Data Points',
+                            data: [12, 19, 15, 25, 22, 30],
+                            borderColor: '#d4a421',
+                            backgroundColor: 'rgba(212, 164, 33, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            pointBackgroundColor: '#d4a421'
+                        }]
+                    };
+                    options = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                grid: { color: '#4a4a4a' },
+                                ticks: { color: '#ccc' }
+                            },
+                            y: {
+                                grid: { color: '#4a4a4a' },
+                                ticks: { color: '#ccc', beginAtZero: true }
+                            }
+                        }
+                    };
+                    break;
+                    
+                default: // bar chart
+                    data = {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                        datasets: [{
+                            label: 'Values',
+                            data: [45, 62, 38, 55],
+                            backgroundColor: '#d4a421',
+                            borderRadius: 4
+                        }]
+                    };
+                    options = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                grid: { color: '#4a4a4a' },
+                                ticks: { color: '#ccc' }
+                            },
+                            y: {
+                                grid: { color: '#4a4a4a' },
+                                ticks: { color: '#ccc', beginAtZero: true }
+                            }
+                        }
+                    };
+                    break;
+            }
+            
+            // Create the chart
+            dashboardCharts[chartId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: options
+            });
+            
+            console.log('Successfully created chart:', chartId, 'with type:', type);
         }
 
         function getChartIcon(type) {
