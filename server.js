@@ -1611,16 +1611,31 @@ function createDemoHTML() {
                             titleElement.textContent = title;
                         }
                         
-                        // Destroy existing chart and create new one with new type
+                        // Destroy existing chart and recreate canvas
                         if (dashboardCharts[window.editingChartId]) {
                             dashboardCharts[window.editingChartId].destroy();
                             delete dashboardCharts[window.editingChartId];
                         }
                         
-                        // Recreate chart with new type
-                        setTimeout(function() {
-                            initDynamicChart(window.editingChartId, type);
-                        }, 100);
+                        // Get the canvas and its container
+                        var oldCanvas = document.getElementById(window.editingChartId);
+                        if (oldCanvas) {
+                            var container = oldCanvas.parentNode;
+                            
+                            // Remove old canvas
+                            container.removeChild(oldCanvas);
+                            
+                            // Create new canvas with same ID
+                            var newCanvas = document.createElement('canvas');
+                            newCanvas.id = window.editingChartId;
+                            container.appendChild(newCanvas);
+                            
+                            // Create new chart
+                            setTimeout(function() {
+                                console.log('Recreating chart with ID:', window.editingChartId, 'and type:', type);
+                                initDynamicChart(window.editingChartId, type);
+                            }, 100);
+                        }
                         
                         showNotification('Чарт "' + title + '" обновлен!');
                     }
