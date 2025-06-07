@@ -866,7 +866,6 @@ function createDemoHTML() {
                 deleteBtn.className = 'chart-dropdown-item';
                 deleteBtn.textContent = 'Удалить чарт';
                 deleteBtn.setAttribute('data-chart-id', chartId);
-                deleteBtn.onclick = function() { deleteChart(this.getAttribute('data-chart-id')); };
                 
                 dropdown.appendChild(editBtn);
                 dropdown.appendChild(deleteBtn);
@@ -887,6 +886,24 @@ function createDemoHTML() {
                 widget.appendChild(header);
                 widget.appendChild(container);
                 grid.appendChild(widget);
+                
+                // Set up delete button click handler after widget is created
+                deleteBtn.onclick = (function(id, widgetElement) {
+                    return function() {
+                        closeAllDropdowns();
+                        if (confirm('Вы уверены, что хотите удалить этот чарт?')) {
+                            // Destroy chart instance first
+                            if (dashboardCharts[id]) {
+                                dashboardCharts[id].destroy();
+                                delete dashboardCharts[id];
+                            }
+                            
+                            // Remove the widget directly
+                            widgetElement.remove();
+                            showNotification('Чарт удален');
+                        }
+                    };
+                })(chartId, widget);
             });
         }
 
