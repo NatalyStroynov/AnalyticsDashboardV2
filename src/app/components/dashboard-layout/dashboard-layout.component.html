@@ -2,27 +2,23 @@
   <!-- Top Navigation Bar -->
   <div class="top-bar">
     <div class="dashboard-selector-wrapper">
-      <mat-form-field appearance="outline" class="dashboard-selector-field">
-        <mat-select 
-          [value]="selectedDashboard()" 
-          (selectionChange)="onDashboardChange($event.value)"
-          class="dashboard-selector">
-          @for (dashboard of dashboards(); track dashboard.id) {
-            <mat-option [value]="dashboard.id">
-              {{ dashboard.name }}
-            </mat-option>
-          }
-          <mat-option value="create-new" class="create-option">
-            + Create New Dashboard
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <select 
+        [value]="selectedDashboard" 
+        (change)="onDashboardChange($event)"
+        class="dashboard-selector">
+        <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
+          {{ dashboard.name }}
+        </option>
+        <option value="create-new" class="create-option">
+          + Create New Dashboard
+        </option>
+      </select>
     </div>
     
     <div class="top-controls">
-      <button mat-raised-button class="top-btn">Data Sources</button>
-      <button mat-raised-button class="filters-btn">
-        <mat-icon>filter_list</mat-icon>
+      <button class="top-btn">Data Sources</button>
+      <button class="filters-btn">
+        <span class="material-icons">filter_list</span>
         Filters
       </button>
     </div>
@@ -31,28 +27,24 @@
   <!-- Main Dashboard Content -->
   <div class="main-container">
     <div class="dashboard-content">
-      @if (currentDashboard().charts.length > 0) {
-        <div class="dashboard-grid">
-          @for (chart of currentDashboard().charts; track chart.id) {
-            <app-simple-chart-widget 
-              [chartData]="chart"
-              (edit)="onChartEdit($event)"
-              (delete)="onChartDelete($event)"
-              (duplicate)="onChartDuplicate($event)">
-            </app-simple-chart-widget>
-          }
-        </div>
-      } @else {
-        <div class="empty-dashboard">
-          <mat-icon class="empty-icon">assessment</mat-icon>
-          <h3>No Charts Available</h3>
-          <p>This dashboard is empty. Add some charts to get started with your data visualization.</p>
-          <button mat-raised-button color="primary" class="add-chart-btn">
-            <mat-icon>add</mat-icon>
-            Add Chart
-          </button>
-        </div>
-      }
+      <div *ngIf="currentDashboard.charts.length > 0" class="dashboard-grid">
+        <app-simple-chart-widget 
+          *ngFor="let chart of currentDashboard.charts; trackBy: trackChart"
+          [chartData]="chart"
+          (edit)="onChartEdit($event)"
+          (delete)="onChartDelete($event)"
+          (duplicate)="onChartDuplicate($event)">
+        </app-simple-chart-widget>
+      </div>
+      <div *ngIf="currentDashboard.charts.length === 0" class="empty-dashboard">
+        <span class="material-icons empty-icon">assessment</span>
+        <h3>No Charts Available</h3>
+        <p>This dashboard is empty. Add some charts to get started with your data visualization.</p>
+        <button class="add-chart-btn">
+          <span class="material-icons">add</span>
+          Add Chart
+        </button>
+      </div>
     </div>
   </div>
 </div>
