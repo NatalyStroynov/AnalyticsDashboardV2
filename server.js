@@ -1724,54 +1724,88 @@ function createDemoHTML() {
         }
         
         function initDynamicChart(chartId, type) {
-            var ctx = document.getElementById(chartId);
-            if (!ctx) return;
+            var canvas = document.getElementById(chartId);
+            if (!canvas) {
+                console.error('Canvas not found for chart:', chartId);
+                return;
+            }
             
-            ctx = ctx.getContext('2d');
+            var ctx = canvas.getContext('2d');
             
-            var data = {
-                labels: ['A', 'B', 'C', 'D'],
-                datasets: [{
-                    label: 'Data',
-                    data: [
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100),
-                        Math.floor(Math.random() * 100)
-                    ],
-                    backgroundColor: [
-                        'rgba(25, 118, 210, 0.8)',
-                        'rgba(0, 150, 136, 0.8)',
-                        'rgba(255, 152, 0, 0.8)',
-                        'rgba(156, 39, 176, 0.8)'
-                    ],
-                    borderColor: '#d4a421',
-                    borderWidth: 2
-                }]
+            // Clear the canvas before creating new chart
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            var data;
+            var options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { 
+                        labels: { color: '#ccc' }
+                    } 
+                }
             };
+            
+            // Configure data and options based on chart type
+            if (type === 'pie' || type === 'doughnut') {
+                data = {
+                    labels: ['Segment A', 'Segment B', 'Segment C', 'Segment D'],
+                    datasets: [{
+                        data: [
+                            Math.floor(Math.random() * 50) + 10,
+                            Math.floor(Math.random() * 50) + 10,
+                            Math.floor(Math.random() * 50) + 10,
+                            Math.floor(Math.random() * 50) + 10
+                        ],
+                        backgroundColor: [
+                            '#2196f3',
+                            '#4caf50', 
+                            '#ff9800',
+                            '#e91e63'
+                        ],
+                        borderWidth: 0
+                    }]
+                };
+                
+                options.plugins.legend.position = 'right';
+            } else {
+                data = {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Dataset',
+                        data: [
+                            Math.floor(Math.random() * 100),
+                            Math.floor(Math.random() * 100),
+                            Math.floor(Math.random() * 100),
+                            Math.floor(Math.random() * 100),
+                            Math.floor(Math.random() * 100),
+                            Math.floor(Math.random() * 100)
+                        ],
+                        backgroundColor: type === 'line' ? 'rgba(212, 164, 33, 0.2)' : '#d4a421',
+                        borderColor: '#d4a421',
+                        borderWidth: 2,
+                        fill: type === 'line'
+                    }]
+                };
+                
+                options.scales = {
+                    x: {
+                        grid: { color: '#4a4a4a' },
+                        ticks: { color: '#ccc' }
+                    },
+                    y: {
+                        grid: { color: '#4a4a4a' },
+                        ticks: { color: '#ccc', beginAtZero: true }
+                    }
+                };
+            }
 
+            console.log('Creating chart with type:', type, 'for canvas:', chartId);
+            
             dashboardCharts[chartId] = new Chart(ctx, {
                 type: type,
                 data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { 
-                            labels: { color: '#ccc' }
-                        } 
-                    },
-                    scales: type !== 'pie' && type !== 'doughnut' ? {
-                        x: {
-                            grid: { color: '#4a4a4a' },
-                            ticks: { color: '#ccc' }
-                        },
-                        y: {
-                            grid: { color: '#4a4a4a' },
-                            ticks: { color: '#ccc', beginAtZero: true }
-                        }
-                    } : {}
-                }
+                options: options
             });
         }
 
