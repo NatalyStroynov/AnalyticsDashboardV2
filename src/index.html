@@ -269,6 +269,7 @@
 
     // Initialize dashboard
     function initDashboard() {
+      console.log('Initializing dashboard...');
       loadDashboard(currentDashboard);
       
       document.getElementById('dashboardSelector').addEventListener('change', function(e) {
@@ -277,25 +278,39 @@
           return;
         }
         currentDashboard = e.target.value;
+        console.log('Switching to dashboard:', currentDashboard);
         loadDashboard(currentDashboard);
       });
     }
 
     // Load dashboard charts
     function loadDashboard(dashboardId) {
+      console.log('Loading dashboard:', dashboardId);
       const dashboard = dashboards[dashboardId];
       const grid = document.getElementById('dashboardGrid');
       
+      if (!dashboard) {
+        console.error('Dashboard not found:', dashboardId);
+        return;
+      }
+      
       // Clear existing charts
-      Object.values(chartInstances).forEach(chart => chart.destroy());
+      Object.values(chartInstances).forEach(chart => {
+        try {
+          chart.destroy();
+        } catch (e) {
+          console.warn('Error destroying chart:', e);
+        }
+      });
       chartInstances = {};
       grid.innerHTML = '';
 
       // Create chart widgets
       dashboard.charts.forEach(chartConfig => {
+        console.log('Creating widget for chart:', chartConfig.id);
         const widget = createChartWidget(chartConfig);
         grid.appendChild(widget);
-        setTimeout(() => createChart(chartConfig), 100);
+        setTimeout(() => createChart(chartConfig), 200);
       });
     }
 
@@ -303,24 +318,28 @@
     function createChartWidget(chartConfig) {
       const widget = document.createElement('div');
       widget.className = 'chart-widget';
-      widget.innerHTML = \`
+      widget.innerHTML = `
         <div class="widget-header">
-          <div class="widget-title">\${chartConfig.title}</div>
+          <div class="widget-title">${chartConfig.title}</div>
           <button class="action-btn">
             <span class="material-icons">more_vert</span>
           </button>
         </div>
         <div class="widget-content">
-          <canvas id="\${chartConfig.id}"></canvas>
+          <canvas id="${chartConfig.id}"></canvas>
         </div>
-      \`;
+      `;
       return widget;
     }
 
     // Create Chart.js chart
     function createChart(chartConfig) {
+      console.log('Creating chart:', chartConfig.id);
       const canvas = document.getElementById(chartConfig.id);
-      if (!canvas) return;
+      if (!canvas) {
+        console.error('Canvas not found for chart:', chartConfig.id);
+        return;
+      }
 
       const ctx = canvas.getContext('2d');
       let data, options;
@@ -408,18 +427,23 @@
           break;
       }
 
-      chartInstances[chartConfig.id] = new Chart(ctx, {
-        type: chartConfig.type,
-        data: data,
-        options: options
-      });
+      try {
+        chartInstances[chartConfig.id] = new Chart(ctx, {
+          type: chartConfig.type,
+          data: data,
+          options: options
+        });
+        console.log('Chart created successfully:', chartConfig.id);
+      } catch (error) {
+        console.error('Error creating chart:', chartConfig.id, error);
+      }
     }
 
     // Create new dashboard
     function createNewDashboard() {
       const name = prompt('Enter dashboard name:');
       if (name && name.trim()) {
-        alert(\`Dashboard "\${name}" would be created here\`);
+        alert(`Dashboard "${name}" would be created here`);
       }
       // Reset selector
       document.getElementById('dashboardSelector').value = currentDashboard;
