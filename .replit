@@ -13,20 +13,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Angular Development Server"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Angular CLI Server"
-
-[[workflows.workflow]]
-name = "Angular Development Server"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "node server.js"
-waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Angular CLI Server"
