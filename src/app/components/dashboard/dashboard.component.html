@@ -1,180 +1,149 @@
-<div class="dashboard-container">
-  <!-- Header -->
-  <header class="dashboard-header">
-    <div class="header-left">
-      <h1 class="dashboard-title">Analytics Dashboard</h1>
-      <div class="dashboard-selector">
-        <select [(ngModel)]="currentDashboard.id" (change)="loadDashboard($event.target.value)" class="dashboard-select">
-          <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
-            {{ dashboard.name }}
-          </option>
-        </select>
-        <button class="btn btn-primary" (click)="showCreateModal = true">
-          <span class="material-icons">add</span>
-          Create Dashboard
+<!-- Main Dashboard Layout -->
+<div class="dashboard-layout">
+  <!-- Top Navigation Bar -->
+  <div class="top-nav">
+    <div class="nav-left">
+      <!-- Dashboard Selector Dropdown -->
+      <div class="dashboard-selector-container" [class.open]="showDashboardDropdown">
+        <button class="dashboard-selector" (click)="toggleDashboardDropdown()">
+          {{ currentDashboard.name }}
+          <span class="material-icons">keyboard_arrow_down</span>
         </button>
+        
+        <div class="dashboard-dropdown" *ngIf="showDashboardDropdown">
+          <div class="dropdown-header">
+            <button class="create-dashboard-btn" (click)="showCreateDashboardModal()">
+              <span class="material-icons">add</span>
+              Create New Dashboard
+            </button>
+          </div>
+          
+          <div class="dashboard-list">
+            <div *ngFor="let dashboard of dashboards" 
+                 class="dashboard-item" 
+                 [class.active]="dashboard.id === currentDashboard.id"
+                 (click)="selectDashboard(dashboard.id)">
+              <div class="dashboard-info">
+                <div class="dashboard-name">{{ dashboard.name }}</div>
+                <div class="dashboard-type">DBS - {{ dashboard.name }}</div>
+              </div>
+              <div class="dashboard-actions">
+                <button class="action-btn" (click)="editDashboard(dashboard.id); $event.stopPropagation()">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="action-btn" (click)="deleteDashboard(dashboard.id); $event.stopPropagation()">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
-    <div class="header-right">
-      <button class="btn btn-secondary" (click)="showChartModal = true">
-        <span class="material-icons">add_chart</span>
-        Add Chart
+    <div class="nav-right">
+      <button class="nav-btn" (click)="showDataSources()">
+        <span class="nav-btn-text">Data Sources</span>
+        <span class="material-icons">keyboard_arrow_down</span>
       </button>
-      <button class="btn btn-secondary">
+      <button class="nav-btn filters-btn" (click)="toggleFiltersPanel()">
         <span class="material-icons">filter_list</span>
-        Filters
+        <span class="nav-btn-text">Filters</span>
       </button>
-      <button class="btn btn-secondary">
-        <span class="material-icons">storage</span>
-        Data Sources
-      </button>
-    </div>
-  </header>
-
-  <!-- Dashboard Content -->
-  <main class="dashboard-content">
-    <div class="dashboard-info">
-      <h2>{{ currentDashboard.name }}</h2>
-      <p>{{ currentDashboard.description }}</p>
-    </div>
-
-    <div class="charts-grid" *ngIf="currentDashboard.charts.length > 0; else noChartsTemplate">
-      <div *ngFor="let chart of currentDashboard.charts" class="chart-widget">
-        <div class="widget-header">
-          <h3>{{ chart.title }}</h3>
-          <div class="widget-actions">
-            <button class="action-btn" (click)="editChart(chart.id)" title="Edit">
-              <span class="material-icons">edit</span>
-            </button>
-            <button class="action-btn" (click)="duplicateChart(chart.id)" title="Duplicate">
-              <span class="material-icons">content_copy</span>
-            </button>
-            <button class="action-btn" (click)="exportChart(chart.id)" title="Export">
-              <span class="material-icons">download</span>
-            </button>
-            <button class="action-btn delete" (click)="deleteChart(chart.id)" title="Delete">
-              <span class="material-icons">delete</span>
-            </button>
-          </div>
-        </div>
-        <div class="widget-content">
-          <canvas 
-            [id]="chart.id" 
-            class="chart-canvas"
-            appChart
-            [chartType]="chart.type"
-            [chartData]="chart.data"
-            [chartOptions]="chart.options">
-          </canvas>
-        </div>
-      </div>
-    </div>
-
-    <ng-template #noChartsTemplate>
-      <div class="empty-state">
-        <div class="empty-icon">
-          <span class="material-icons">bar_chart</span>
-        </div>
-        <h3>No Charts Available</h3>
-        <p>Start by adding your first chart to this dashboard</p>
-        <button class="btn btn-primary" (click)="showChartModal = true">
-          <span class="material-icons">add_chart</span>
-          Add Chart
-        </button>
-      </div>
-    </ng-template>
-  </main>
-
-  <!-- Create Dashboard Modal -->
-  <div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Create New Dashboard</h3>
-        <button class="close-btn" (click)="showCreateModal = false">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="dashboardName">Dashboard Name</label>
-          <input 
-            type="text" 
-            id="dashboardName"
-            [(ngModel)]="newDashboardName" 
-            class="form-input" 
-            placeholder="Enter dashboard name">
-        </div>
-        <div class="form-group">
-          <label for="dashboardDescription">Description</label>
-          <textarea 
-            id="dashboardDescription"
-            [(ngModel)]="newDashboardDescription" 
-            class="form-input" 
-            placeholder="Enter dashboard description"
-            rows="3"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showCreateModal = false">Cancel</button>
-        <button class="btn btn-primary" (click)="createDashboard()">Create Dashboard</button>
-      </div>
     </div>
   </div>
 
-  <!-- Add Chart Modal -->
-  <div class="modal-overlay" *ngIf="showChartModal" (click)="showChartModal = false">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Add New Chart</h3>
-        <button class="close-btn" (click)="showChartModal = false">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="chartTitle">Chart Title</label>
-          <input 
-            type="text" 
-            id="chartTitle"
-            [(ngModel)]="newChartTitle" 
-            class="form-input" 
-            placeholder="Enter chart title">
-        </div>
-        <div class="form-group">
-          <label>Chart Type</label>
-          <div class="chart-type-grid">
-            <div class="chart-type-option" 
-                 [class.selected]="newChartType === 'bar'"
-                 (click)="newChartType = 'bar'">
-              <div class="chart-icon">📊</div>
-              <span>Bar Chart</span>
+  <!-- Main Content Area -->
+  <div class="main-content" [class.filters-open]="showFiltersPanel">
+    <!-- Charts Grid -->
+    <div class="charts-container">
+      <div class="charts-grid" *ngIf="currentDashboard.charts.length > 0; else emptyState">
+        <div *ngFor="let chart of currentDashboard.charts" class="chart-widget">
+          <div class="widget-header">
+            <h3 class="widget-title">{{ chart.title }}</h3>
+            <div class="widget-menu">
+              <button class="menu-btn" (click)="toggleChartMenu(chart.id)">
+                <span class="material-icons">more_vert</span>
+              </button>
+              <div class="chart-menu" *ngIf="activeChartMenu === chart.id">
+                <button (click)="editChart(chart.id)">Edit Chart</button>
+                <button (click)="duplicateChart(chart.id)">Duplicate</button>
+                <button (click)="deleteChart(chart.id)">Delete</button>
+              </div>
             </div>
-            <div class="chart-type-option" 
-                 [class.selected]="newChartType === 'line'"
-                 (click)="newChartType = 'line'">
-              <div class="chart-icon">📈</div>
-              <span>Line Chart</span>
-            </div>
-            <div class="chart-type-option" 
-                 [class.selected]="newChartType === 'pie'"
-                 (click)="newChartType = 'pie'">
-              <div class="chart-icon">🥧</div>
-              <span>Pie Chart</span>
-            </div>
-            <div class="chart-type-option" 
-                 [class.selected]="newChartType === 'doughnut'"
-                 (click)="newChartType = 'doughnut'">
-              <div class="chart-icon">🍩</div>
-              <span>Doughnut</span>
-            </div>
+          </div>
+          <div class="widget-content">
+            <canvas 
+              [id]="chart.id" 
+              class="chart-canvas"
+              appChart
+              [chartType]="chart.type"
+              [chartData]="chart.data"
+              [chartOptions]="chart.options">
+            </canvas>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showChartModal = false">Cancel</button>
-        <button class="btn btn-primary" (click)="addChart()">Add Chart</button>
+
+      <ng-template #emptyState>
+        <div class="empty-dashboard">
+          <span class="material-icons">assessment</span>
+          <h3>No visualizations yet</h3>
+          <p>Add your first chart to get started</p>
+        </div>
+      </ng-template>
+      
+      <!-- Add Chart Button -->
+      <button class="add-chart-btn" (click)="showChartConfigModal()">
+        <span class="material-icons">add</span>
+      </button>
+    </div>
+
+    <!-- Filters Side Panel -->
+    <div class="filters-panel" [class.open]="showFiltersPanel">
+      <div class="panel-header">
+        <h3>FILTERS</h3>
+        <button class="close-panel" (click)="toggleFiltersPanel()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      
+      <div class="filters-content">
+        <div class="filter-row" *ngFor="let filter of activeFilters; let i = index">
+          <div class="filter-group">
+            <div class="form-row">
+              <label>Field Name</label>
+              <input type="text" [(ngModel)]="filter.field" placeholder="Select field">
+            </div>
+            <div class="form-row">
+              <label>Operator</label>
+              <select [(ngModel)]="filter.operator">
+                <option value="includes">Includes...</option>
+                <option value="equals">=</option>
+                <option value="greater">></option>
+                <option value="less"><</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Value</label>
+              <input type="text" [(ngModel)]="filter.value" placeholder="Enter value">
+            </div>
+          </div>
+          <button class="remove-filter" (click)="removeFilter(i)">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+        
+        <button class="add-filter-btn" (click)="addNewFilter()">
+          <span class="material-icons">add</span>
+          Add New Clause
+        </button>
+        
+        <div class="filter-actions">
+          <button class="apply-btn" (click)="applyFilters()">Apply</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
