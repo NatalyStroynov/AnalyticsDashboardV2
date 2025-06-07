@@ -1458,9 +1458,17 @@ function createDemoHTML() {
                     // Then populate the fields with a small delay to ensure DOM is ready
                     setTimeout(function() {
                         var titleInput = document.getElementById('chartTitle');
+                        var typeSelect = document.getElementById('chartType');
+                        
                         if (titleInput) {
                             titleInput.value = currentTitle;
                             titleInput.focus();
+                        }
+                        
+                        // Try to detect current chart type from Chart.js instance
+                        if (typeSelect && dashboardCharts[chartId]) {
+                            var currentType = dashboardCharts[chartId].config.type;
+                            typeSelect.value = currentType || 'bar';
                         }
                     }, 50);
                     
@@ -1597,10 +1605,22 @@ function createDemoHTML() {
                     }
                     
                     if (widget) {
+                        // Update title
                         var titleElement = widget.querySelector('.widget-title');
                         if (titleElement) {
                             titleElement.textContent = title;
                         }
+                        
+                        // Destroy existing chart and create new one with new type
+                        if (dashboardCharts[window.editingChartId]) {
+                            dashboardCharts[window.editingChartId].destroy();
+                            delete dashboardCharts[window.editingChartId];
+                        }
+                        
+                        // Recreate chart with new type
+                        setTimeout(function() {
+                            initDynamicChart(window.editingChartId, type);
+                        }, 100);
                         
                         showNotification('Чарт "' + title + '" обновлен!');
                     }
