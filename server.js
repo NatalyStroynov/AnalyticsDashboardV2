@@ -848,7 +848,8 @@ function createDemoHTML() {
                 var actionBtn = document.createElement('button');
                 actionBtn.className = 'action-btn';
                 actionBtn.title = 'More options';
-                actionBtn.onclick = function() { toggleChartDropdown(chartId); };
+                actionBtn.setAttribute('data-chart-id', chartId);
+                actionBtn.onclick = function() { toggleChartDropdown(this.getAttribute('data-chart-id')); };
                 actionBtn.innerHTML = '<span class="material-icons">more_vert</span>';
                 
                 var dropdown = document.createElement('div');
@@ -858,12 +859,14 @@ function createDemoHTML() {
                 var editBtn = document.createElement('button');
                 editBtn.className = 'chart-dropdown-item';
                 editBtn.textContent = 'Редактировать чарт';
-                editBtn.onclick = function() { editChart(chartId); };
+                editBtn.setAttribute('data-chart-id', chartId);
+                editBtn.onclick = function() { editChart(this.getAttribute('data-chart-id')); };
                 
                 var deleteBtn = document.createElement('button');
                 deleteBtn.className = 'chart-dropdown-item';
                 deleteBtn.textContent = 'Удалить чарт';
-                deleteBtn.onclick = function() { deleteChart(chartId); };
+                deleteBtn.setAttribute('data-chart-id', chartId);
+                deleteBtn.onclick = function() { deleteChart(this.getAttribute('data-chart-id')); };
                 
                 dropdown.appendChild(editBtn);
                 dropdown.appendChild(deleteBtn);
@@ -1425,18 +1428,23 @@ function createDemoHTML() {
                 // Find and remove the chart widget
                 var canvas = document.getElementById(chartId);
                 if (canvas) {
-                    var widget = canvas.closest('.chart-widget');
-                    if (widget) {
-                        widget.remove();
+                    // Find parent widget using parentNode traversal
+                    var widget = canvas.parentNode.parentNode; // canvas -> chart-container -> chart-widget
+                    if (widget && widget.classList.contains('chart-widget')) {
+                        widget.parentNode.removeChild(widget);
+                        
+                        // Destroy chart instance if exists
+                        if (dashboardCharts[chartId]) {
+                            dashboardCharts[chartId].destroy();
+                            delete dashboardCharts[chartId];
+                        }
+                        
+                        showNotification('Чарт удален');
+                    } else {
+                        showNotification('Ошибка при удалении чарта');
                     }
-                    
-                    // Destroy chart instance if exists
-                    if (dashboardCharts[chartId]) {
-                        dashboardCharts[chartId].destroy();
-                        delete dashboardCharts[chartId];
-                    }
-                    
-                    showNotification('Чарт удален');
+                } else {
+                    showNotification('Чарт не найден');
                 }
             }
         }
