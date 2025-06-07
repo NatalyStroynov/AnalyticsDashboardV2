@@ -146,4 +146,8 @@ export class DashboardLayoutComponent implements OnInit {
       dashboard.charts.push(duplicatedChart);
     }
   }
+
+  trackChart(index: number, chart: ChartData): string {
+    return chart.id;
+  }
 }
