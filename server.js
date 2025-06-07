@@ -379,7 +379,7 @@ function createDemoHTML() {
 <body>
     <!-- Top Navigation Bar -->
     <div class="top-bar">
-        <select class="dashboard-selector">
+        <select class="dashboard-selector" onchange="switchDashboard(this.value)">
             <option value="simulation">Simulation Field Model Dashboard</option>
             <option value="lead-contact">Lead Contacts Dashboard</option>
             <option value="fiber-tracts">Fiber Tracts Dashboard</option>
@@ -636,18 +636,110 @@ function createDemoHTML() {
 
     <script>
         // Global variables
-        var chartCounter = 3;
+        var chartCounter = 7;
+        var currentDashboard = 'simulation';
+        var dashboardCharts = {};
+
+        // Dashboard configurations
+        var dashboards = {
+            'simulation': {
+                title: 'Simulation Field Model Dashboard',
+                charts: ['Patient Accrual', 'Patient Gender', 'Patient Age', 'Lead Model', 'Disease', 'IPG Type']
+            },
+            'lead-contact': {
+                title: 'Lead Contacts Dashboard',
+                charts: ['Contact Volume', 'Response Rate', 'Lead Quality', 'Conversion Rate']
+            },
+            'fiber-tracts': {
+                title: 'Fiber Tracts Dashboard',
+                charts: ['Tract Density', 'Connection Strength', 'Pathway Analysis', 'Region Activity']
+            }
+        };
 
         // Initialize charts when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initCharts();
+            initDashboard('simulation');
         });
 
-        // Initialize sample charts
-        function initCharts() {
+        // Dashboard switching function
+        function switchDashboard(dashboardId) {
+            currentDashboard = dashboardId;
+            clearAllCharts();
+            initDashboard(dashboardId);
+            showNotification('Switched to ' + dashboards[dashboardId].title);
+        }
+
+        // Initialize dashboard
+        function initDashboard(dashboardId) {
+            currentDashboard = dashboardId;
+            clearDashboardGrid();
+            createDashboardWidgets(dashboardId);
+            setTimeout(function() {
+                initChartsForDashboard(dashboardId);
+            }, 100);
+        }
+
+        // Clear dashboard grid
+        function clearDashboardGrid() {
+            var grid = document.querySelector('.dashboard-grid');
+            grid.innerHTML = '';
+        }
+
+        // Create dashboard widgets
+        function createDashboardWidgets(dashboardId) {
+            var config = dashboards[dashboardId];
+            var grid = document.querySelector('.dashboard-grid');
+            
+            config.charts.forEach(function(chartTitle, index) {
+                var widget = document.createElement('div');
+                widget.className = 'chart-widget';
+                widget.innerHTML = 
+                    '<div class="widget-header">' +
+                        '<div class="widget-title">' + chartTitle + '</div>' +
+                        '<div class="widget-actions">' +
+                            '<button class="action-btn" onclick="editChart(' + (index + 1) + ')" title="More options">' +
+                                '<span class="material-icons">more_vert</span>' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="chart-container">' +
+                        '<canvas id="chart' + (index + 1) + '"></canvas>' +
+                    '</div>';
+                
+                grid.appendChild(widget);
+            });
+        }
+
+        // Clear all chart instances
+        function clearAllCharts() {
+            Object.keys(dashboardCharts).forEach(function(key) {
+                if (dashboardCharts[key]) {
+                    dashboardCharts[key].destroy();
+                    delete dashboardCharts[key];
+                }
+            });
+        }
+
+        // Initialize charts for specific dashboard
+        function initChartsForDashboard(dashboardId) {
+            switch(dashboardId) {
+                case 'simulation':
+                    initSimulationCharts();
+                    break;
+                case 'lead-contact':
+                    initLeadContactCharts();
+                    break;
+                case 'fiber-tracts':
+                    initFiberTractsCharts();
+                    break;
+            }
+        }
+
+        // Initialize simulation dashboard charts
+        function initSimulationCharts() {
             // Chart 1 - Patient Accrual (Line Chart)
             var ctx1 = document.getElementById('chart1').getContext('2d');
-            new Chart(ctx1, {
+            dashboardCharts['chart1'] = new Chart(ctx1, {
                 type: 'line',
                 data: {
                     labels: ['May-2023', 'Jun-2023', 'Jul-2023', 'Aug-2023', 'Sep-2023', 'Oct-2023', 'Nov-2023', 'Dec-2023', 'Jan-2024', 'Feb-2024', 'Mar-2024', 'Apr-2024'],
@@ -684,7 +776,7 @@ function createDemoHTML() {
 
             // Chart 2 - Patient Gender (Pie Chart)
             var ctx2 = document.getElementById('chart2').getContext('2d');
-            new Chart(ctx2, {
+            dashboardCharts['chart2'] = new Chart(ctx2, {
                 type: 'pie',
                 data: {
                     labels: ['Male', 'Female'],
@@ -708,7 +800,7 @@ function createDemoHTML() {
 
             // Chart 3 - Patient Age (Bar Chart)
             var ctx3 = document.getElementById('chart3').getContext('2d');
-            new Chart(ctx3, {
+            dashboardCharts['chart3'] = new Chart(ctx3, {
                 type: 'bar',
                 data: {
                     labels: ['60-65', '65-70', '70-75', '75-80', '80-85', '85-90', '90-95', '95-100', '100-105', '105-110', '110-115', '115+'],
@@ -738,7 +830,7 @@ function createDemoHTML() {
 
             // Chart 4 - Lead Model (Pie Chart)
             var ctx4 = document.getElementById('chart4').getContext('2d');
-            new Chart(ctx4, {
+            dashboardCharts['chart4'] = new Chart(ctx4, {
                 type: 'pie',
                 data: {
                     labels: ['DB-2201', 'DB-2202'],
@@ -762,7 +854,7 @@ function createDemoHTML() {
 
             // Chart 5 - Disease (Bar Chart)
             var ctx5 = document.getElementById('chart5').getContext('2d');
-            new Chart(ctx5, {
+            dashboardCharts['chart5'] = new Chart(ctx5, {
                 type: 'bar',
                 data: {
                     labels: ['Disease A', 'Disease B', 'Disease C'],
@@ -792,7 +884,7 @@ function createDemoHTML() {
 
             // Chart 6 - IPG Type (Pie Chart)
             var ctx6 = document.getElementById('chart6').getContext('2d');
-            new Chart(ctx6, {
+            dashboardCharts['chart6'] = new Chart(ctx6, {
                 type: 'pie',
                 data: {
                     labels: ['Type A', 'Type B', 'Type C'],
@@ -809,6 +901,253 @@ function createDemoHTML() {
                         legend: {
                             position: 'right',
                             labels: { color: '#ccc', usePointStyle: true }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Lead Contacts dashboard charts
+        function initLeadContactCharts() {
+            // Chart 1 - Contact Volume (Bar Chart)
+            var ctx1 = document.getElementById('chart1').getContext('2d');
+            dashboardCharts['chart1'] = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Contacts',
+                        data: [45, 52, 38, 67, 73, 89],
+                        backgroundColor: '#d4a421',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2 - Response Rate (Line Chart)
+            var ctx2 = document.getElementById('chart2').getContext('2d');
+            dashboardCharts['chart2'] = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Response Rate %',
+                        data: [65, 72, 68, 78],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#4caf50',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true, max: 100 }
+                        }
+                    }
+                }
+            });
+
+            // Chart 3 - Lead Quality (Doughnut Chart)
+            var ctx3 = document.getElementById('chart3').getContext('2d');
+            dashboardCharts['chart3'] = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Quality', 'Medium Quality', 'Low Quality'],
+                    datasets: [{
+                        data: [45, 35, 20],
+                        backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#ccc', usePointStyle: true }
+                        }
+                    }
+                }
+            });
+
+            // Chart 4 - Conversion Rate (Area Chart)
+            var ctx4 = document.getElementById('chart4').getContext('2d');
+            dashboardCharts['chart4'] = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Conversion Rate',
+                        data: [12, 18, 15, 22],
+                        borderColor: '#e91e63',
+                        backgroundColor: 'rgba(233, 30, 99, 0.2)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Fiber Tracts dashboard charts
+        function initFiberTractsCharts() {
+            // Chart 1 - Tract Density (Heatmap-style Bar Chart)
+            var ctx1 = document.getElementById('chart1').getContext('2d');
+            dashboardCharts['chart1'] = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Region A', 'Region B', 'Region C', 'Region D', 'Region E'],
+                    datasets: [{
+                        label: 'Density',
+                        data: [85, 92, 78, 96, 88],
+                        backgroundColor: ['#1e88e5', '#43a047', '#fb8c00', '#e53935', '#8e24aa'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true, max: 100 }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2 - Connection Strength (Radar Chart)
+            var ctx2 = document.getElementById('chart2').getContext('2d');
+            dashboardCharts['chart2'] = new Chart(ctx2, {
+                type: 'radar',
+                data: {
+                    labels: ['Frontal', 'Parietal', 'Temporal', 'Occipital', 'Cerebellar'],
+                    datasets: [{
+                        label: 'Strength',
+                        data: [80, 90, 75, 85, 70],
+                        borderColor: '#d4a421',
+                        backgroundColor: 'rgba(212, 164, 33, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true, max: 100 },
+                            pointLabels: { color: '#ccc' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 3 - Pathway Analysis (Scatter Plot)
+            var ctx3 = document.getElementById('chart3').getContext('2d');
+            dashboardCharts['chart3'] = new Chart(ctx3, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Pathways',
+                        data: [
+                            {x: 10, y: 20}, {x: 15, y: 30}, {x: 25, y: 45},
+                            {x: 30, y: 50}, {x: 40, y: 65}, {x: 50, y: 70}
+                        ],
+                        backgroundColor: '#ff5722',
+                        borderColor: '#ff5722'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 4 - Region Activity (Line Chart)
+            var ctx4 = document.getElementById('chart4').getContext('2d');
+            dashboardCharts['chart4'] = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['0ms', '100ms', '200ms', '300ms', '400ms', '500ms'],
+                    datasets: [{
+                        label: 'Activity Level',
+                        data: [20, 45, 78, 92, 65, 34],
+                        borderColor: '#9c27b0',
+                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true }
                         }
                     }
                 }
