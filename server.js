@@ -1439,7 +1439,7 @@ function createDemoHTML() {
             // Close modal
             closeModal('createDashboardModal');
             
-            showNotification('Дашборд "' + name + '" создан успешно');
+            showNotification('Dashboard "' + name + '" created successfully');
         }
 
         // Initialize charts for custom dashboard (empty by default)
@@ -1508,12 +1508,12 @@ function createDemoHTML() {
                         }
                     }, 50);
                     
-                    showNotification('Редактирование чарта: ' + currentTitle);
+                    showNotification('Editing chart: ' + currentTitle);
                 } else {
-                    showNotification('Чарт не найден для редактирования');
+                    showNotification('Chart not found for editing');
                 }
             } else {
-                showNotification('Элемент чарта не найден');
+                showNotification('Chart element not found');
             }
         }
 
@@ -1569,9 +1569,9 @@ function createDemoHTML() {
                         widget.parentNode.removeChild(widget);
                     }
                     
-                    showNotification('Чарт удален');
+                    showNotification('Chart deleted');
                 } else {
-                    showNotification('Не удалось найти чарт для удаления');
+                    showNotification('Could not find chart to delete');
                 }
             }
         }
@@ -1687,7 +1687,7 @@ function createDemoHTML() {
                 var grid = document.querySelector('.dashboard-grid');
                 var newWidget = createChartWidget(chartCounter++, title, type);
                 grid.appendChild(newWidget);
-                showNotification('Чарт "' + title + '" создан!');
+                showNotification('Chart "' + title + '" created!');
             }
             
             closeModal('chartModal');
@@ -1764,7 +1764,7 @@ function createDemoHTML() {
                         
                         // Remove the widget directly
                         widgetElement.remove();
-                        showNotification('Чарт удален');
+                        showNotification('Chart deleted');
                     }
                 };
             })(chartId, widget);
