@@ -144,9 +144,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     console.log('Rendering chart:', chart.title, 'Type:', chart.type);
-    console.log('Chart data:', JSON.stringify(chart.data, null, 2));
-    console.log('Canvas element:', canvas);
-    console.log('Canvas context:', ctx);
+    console.log('Chart.js available:', typeof ChartJS);
+    console.log('Canvas element:', canvas.tagName, canvas.id);
+    console.log('Canvas context available:', !!ctx);
+    console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
 
     const defaultOptions = {
       responsive: true,
@@ -221,37 +222,49 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         };
 
-    try {
-      const newChart = new ChartJS(ctx, {
-        type: chart.type as any,
-        data: chart.data,
-        options: finalOptions
-      });
+    // Re-register Chart.js components to ensure they're available
+    import('chart.js').then(({ Chart, registerables }) => {
+      Chart.register(...registerables);
       
-      console.log('Chart created successfully for:', chart.title);
+      console.log('Chart.js re-registered successfully');
       
-      // Store reference to chart instance on canvas for future cleanup
-      (canvas as any).chart = newChart;
-      
-    } catch (error) {
-      console.error('Error creating chart for', chart.title, ':', error);
-      
-      // Try with minimal configuration
       try {
-        const simpleChart = new ChartJS(ctx, {
+        // Create deep copy of chart data to avoid readonly issues
+        const chartDataCopy = JSON.parse(JSON.stringify(chart.data));
+        
+        const newChart = new Chart(ctx, {
           type: chart.type as any,
-          data: chart.data,
-          options: {
-            responsive: false,
-            maintainAspectRatio: false
-          }
+          data: chartDataCopy,
+          options: finalOptions
         });
-        console.log('Simple chart created successfully for:', chart.title);
-        (canvas as any).chart = simpleChart;
-      } catch (simpleError) {
-        console.error('Even simple chart failed for', chart.title, ':', simpleError);
+        
+        console.log('Chart created successfully for:', chart.title);
+        (canvas as any).chart = newChart;
+        
+      } catch (error: any) {
+        console.error('Chart creation failed for', chart.title, ':', error.message);
+        
+        // Try with absolute minimal config
+        try {
+          const simpleChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['A'],
+              datasets: [{
+                data: [1],
+                backgroundColor: '#ff0000'
+              }]
+            }
+          });
+          console.log('Fallback simple chart created for:', chart.title);
+          (canvas as any).chart = simpleChart;
+        } catch (fallbackError: any) {
+          console.error('Even fallback chart failed:', fallbackError.message);
+        }
       }
-    }
+    }).catch(importError => {
+      console.error('Failed to import Chart.js:', importError);
+    });
   }
 
   // Dashboard Management
