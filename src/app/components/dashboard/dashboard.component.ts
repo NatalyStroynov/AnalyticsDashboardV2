@@ -1,7 +1,14 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 import { ChartDirective } from '../../directives/chart.directive';
+import { DashboardState } from '../../store/dashboard.state';
+import * as DashboardActions from '../../store/dashboard.actions';
+import * as DashboardSelectors from '../../store/dashboard.selectors';
 
 export interface Chart {
   id: string;
