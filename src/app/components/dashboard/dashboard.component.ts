@@ -49,14 +49,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Load dashboards from store
     this.store.dispatch(DashboardActions.loadDashboards());
     
-    // Subscribe to current dashboard changes
+    // Subscribe to current dashboard charts changes
+    this.currentDashboardCharts$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(charts => {
+        if (charts && charts.length > 0) {
+          setTimeout(() => this.initializeCharts(), 200);
+        }
+      });
+
+    // Subscribe to current dashboard changes for UI state
     this.currentDashboard$
       .pipe(takeUntil(this.destroy$))
       .subscribe(dashboard => {
         this.currentDashboard = dashboard;
-        if (dashboard) {
-          setTimeout(() => this.initializeCharts(), 100);
-        }
       });
 
     // Subscribe to dashboards list
@@ -75,7 +81,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.initializeCharts(), 100);
+    // Charts will be initialized through the currentDashboard$ subscription
   }
 
   ngOnDestroy(): void {
@@ -87,6 +93,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.currentDashboard) return;
     
     this.currentDashboard.charts.forEach(chart => {
+      const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
+      if (canvas) {
+        this.renderChartOnCanvas(canvas, chart);
+      }
+    });
+  }
+
+  private initializeChartsFromArray(charts: Chart[]): void {
+    charts.forEach(chart => {
       const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
       if (canvas) {
         this.renderChartOnCanvas(canvas, chart);

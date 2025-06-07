@@ -57,7 +57,7 @@
   <div class="main-content" [class.filters-open]="showFiltersPanel">
     <!-- Charts Grid -->
     <div class="charts-container">
-      <div class="charts-grid" *ngIf="currentDashboard.charts.length > 0; else emptyState">
+      <div class="charts-grid" *ngIf="currentDashboard && currentDashboard.charts.length > 0; else emptyState">
         <div *ngFor="let chart of currentDashboard.charts" class="chart-widget">
           <div class="widget-header">
             <h3 class="widget-title">{{ chart.title }}</h3>
