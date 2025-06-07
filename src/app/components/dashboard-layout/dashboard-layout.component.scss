@@ -1,0 +1,191 @@
+.dashboard-container {
+  background: #2d2d2d;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.top-bar {
+  background: #3a3a3a;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #4a4a4a;
+  position: relative;
+  z-index: 100;
+}
+
+.dashboard-selector-wrapper {
+  position: relative;
+  z-index: 200;
+}
+
+.dashboard-selector-field {
+  .mat-mdc-form-field-outline {
+    color: #555;
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    background: #2d2d2d;
+  }
+  
+  .mat-mdc-select-value {
+    color: white;
+  }
+  
+  .mat-mdc-select-arrow {
+    color: #ccc;
+  }
+}
+
+.dashboard-selector {
+  background: #2d2d2d;
+  color: white;
+  min-width: 280px;
+  max-width: 350px;
+  font-size: 14px;
+}
+
+.create-option {
+  background: #3a4a3a !important;
+  color: #d4a421 !important;
+  font-weight: 500;
+}
+
+.top-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.top-btn, .filters-btn {
+  background: #555;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  
+  &:hover {
+    background: #666;
+  }
+}
+
+.filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.main-container {
+  padding: 20px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.empty-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  color: #ccc;
+}
+
+.empty-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.empty-dashboard h3 {
+  color: #ccc;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.empty-dashboard p {
+  color: #888;
+  font-size: 16px;
+  max-width: 400px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.add-chart-btn {
+  background: #d4a421;
+  color: #2d2d2d;
+  
+  &:hover {
+    background: #e6b82e;
+  }
+}
+
+// Override Angular Material dark theme colors
+::ng-deep {
+  .mat-mdc-option {
+    background: #2d2d2d !important;
+    color: white !important;
+    
+    &.create-option {
+      background: #3a4a3a !important;
+      color: #d4a421 !important;
+    }
+    
+    &:hover:not(.mdc-list-item--disabled) {
+      background: #4a4a4a !important;
+    }
+  }
+  
+  .mat-mdc-select-panel {
+    background: #2d2d2d !important;
+    border: 1px solid #555;
+  }
+  
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background: #2d2d2d;
+    }
+    
+    .mat-mdc-form-field-outline {
+      color: #555;
+    }
+    
+    &.mat-focused .mat-mdc-form-field-outline {
+      color: #d4a421;
+    }
+  }
+  
+  .mat-mdc-raised-button {
+    &.top-btn, &.filters-btn {
+      background: #555;
+      color: white;
+      
+      &:hover {
+        background: #666;
+      }
+    }
+  }
+}

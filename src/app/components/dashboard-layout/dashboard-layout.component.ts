@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ChartWidgetComponent } from '../chart-widget/chart-widget.component';
+import { SimpleChartWidgetComponent } from '../simple-chart-widget/simple-chart-widget.component';
 import { CreateDashboardModalComponent } from '../create-dashboard-modal/create-dashboard-modal.component';
 import { NotificationService } from '../../services/notification.service';
 
@@ -38,7 +38,7 @@ interface ChartData {
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    ChartWidgetComponent
+    SimpleChartWidgetComponent
   ],
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss']

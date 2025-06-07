@@ -1,0 +1,81 @@
+.chart-widget {
+  background: #3a3a3a;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 300px;
+  border: 1px solid #4a4a4a;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    border-color: #555;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.widget-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.widget-actions {
+  position: relative;
+}
+
+.action-btn {
+  color: #ccc;
+  width: 32px;
+  height: 32px;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d4a421;
+  }
+}
+
+.widget-content {
+  height: 250px;
+  position: relative;
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+// Override Material menu styles for dark theme
+::ng-deep {
+  .mat-mdc-menu-panel {
+    background: #3a3a3a !important;
+    border: 1px solid #555;
+  }
+  
+  .mat-mdc-menu-item {
+    color: white !important;
+    
+    &:hover {
+      background: rgba(212, 164, 33, 0.1) !important;
+    }
+    
+    &.delete-option {
+      color: #f44336 !important;
+      
+      &:hover {
+        background: rgba(244, 67, 54, 0.1) !important;
+      }
+    }
+    
+    .mat-icon {
+      color: inherit;
+      margin-right: 12px;
+    }
+  }
+}
