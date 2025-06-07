@@ -1621,49 +1621,138 @@ function createDemoHTML() {
         }
 
         function createChartWidget(id, title, type) {
+            var chartId = 'chart' + id;
             var widget = document.createElement('div');
             widget.className = 'chart-widget';
             
-            widget.innerHTML = 
-                '<div class="widget-header">' +
-                    '<div class="widget-title">' +
-                        '<span class="material-icons">' + getChartIcon(type) + '</span>' +
-                        title +
-                    '</div>' +
-                    '<div class="widget-actions">' +
-                        '<button class="action-btn" onclick="editChart(' + id + ')" title="Редактировать">' +
-                            '<span class="material-icons">edit</span>' +
-                        '</button>' +
-                        '<button class="action-btn" onclick="duplicateChart(' + id + ')" title="Дублировать">' +
-                            '<span class="material-icons">content_copy</span>' +
-                        '</button>' +
-                        '<button class="action-btn" onclick="deleteChart(' + id + ')" title="Удалить">' +
-                            '<span class="material-icons">delete</span>' +
-                        '</button>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="chart-container">' +
-                    '<canvas id="chart' + id + '"></canvas>' +
-                '</div>' +
-                '<div class="architecture-info">' +
-                    '<h4>Dynamic Chart</h4>' +
-                    '<div class="code-structure">' +
-                        'Type: ' + type + '<br>' +
-                        'Created via ChartConfig<br>' +
-                        'Supports editing operations' +
-                    '</div>' +
-                '</div>';
-
-            // Create chart after DOM update
+            // Create widget header
+            var header = document.createElement('div');
+            header.className = 'widget-header';
+            
+            var titleDiv = document.createElement('div');
+            titleDiv.className = 'widget-title';
+            titleDiv.textContent = title;
+            
+            var actions = document.createElement('div');
+            actions.className = 'widget-actions';
+            
+            var chartActions = document.createElement('div');
+            chartActions.className = 'chart-actions';
+            
+            var actionBtn = document.createElement('button');
+            actionBtn.className = 'action-btn';
+            actionBtn.title = 'More options';
+            actionBtn.onclick = function() { toggleChartDropdown(chartId); };
+            actionBtn.innerHTML = '<span class="material-icons">more_vert</span>';
+            
+            var dropdown = document.createElement('div');
+            dropdown.className = 'chart-dropdown';
+            dropdown.id = 'dropdown-' + chartId;
+            
+            var editBtn = document.createElement('button');
+            editBtn.className = 'chart-dropdown-item';
+            editBtn.textContent = 'Редактировать чарт';
+            editBtn.onclick = function() { editChart(chartId); };
+            
+            var deleteBtn = document.createElement('button');
+            deleteBtn.className = 'chart-dropdown-item';
+            deleteBtn.textContent = 'Удалить чарт';
+            
+            dropdown.appendChild(editBtn);
+            dropdown.appendChild(deleteBtn);
+            chartActions.appendChild(actionBtn);
+            chartActions.appendChild(dropdown);
+            actions.appendChild(chartActions);
+            header.appendChild(titleDiv);
+            header.appendChild(actions);
+            
+            // Create chart container
+            var container = document.createElement('div');
+            container.className = 'chart-container';
+            
+            var canvas = document.createElement('canvas');
+            canvas.id = chartId;
+            container.appendChild(canvas);
+            
+            widget.appendChild(header);
+            widget.appendChild(container);
+            
+            // Set up delete button click handler after widget is created
+            deleteBtn.onclick = (function(id, widgetElement) {
+                return function() {
+                    closeAllDropdowns();
+                    if (confirm('Вы уверены, что хотите удалить этот чарт?')) {
+                        // Destroy chart instance first
+                        if (dashboardCharts[id]) {
+                            dashboardCharts[id].destroy();
+                            delete dashboardCharts[id];
+                        }
+                        
+                        // Remove the widget directly
+                        widgetElement.remove();
+                        showNotification('Чарт удален');
+                    }
+                };
+            })(chartId, widget);
+            
+            // Initialize the chart after a short delay
             setTimeout(function() {
-                var canvas = document.getElementById('chart' + id);
-                if (canvas) {
-                    var ctx = canvas.getContext('2d');
-                    createSampleChart(ctx, type);
-                }
+                initDynamicChart(chartId, type);
             }, 100);
-
+            
             return widget;
+        }
+        
+        function initDynamicChart(chartId, type) {
+            var ctx = document.getElementById(chartId);
+            if (!ctx) return;
+            
+            ctx = ctx.getContext('2d');
+            
+            var data = {
+                labels: ['A', 'B', 'C', 'D'],
+                datasets: [{
+                    label: 'Data',
+                    data: [
+                        Math.floor(Math.random() * 100),
+                        Math.floor(Math.random() * 100),
+                        Math.floor(Math.random() * 100),
+                        Math.floor(Math.random() * 100)
+                    ],
+                    backgroundColor: [
+                        'rgba(25, 118, 210, 0.8)',
+                        'rgba(0, 150, 136, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(156, 39, 176, 0.8)'
+                    ],
+                    borderColor: '#d4a421',
+                    borderWidth: 2
+                }]
+            };
+
+            dashboardCharts[chartId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            labels: { color: '#ccc' }
+                        } 
+                    },
+                    scales: type !== 'pie' && type !== 'doughnut' ? {
+                        x: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc' }
+                        },
+                        y: {
+                            grid: { color: '#4a4a4a' },
+                            ticks: { color: '#ccc', beginAtZero: true }
+                        }
+                    } : {}
+                }
+            });
         }
 
         function getChartIcon(type) {
