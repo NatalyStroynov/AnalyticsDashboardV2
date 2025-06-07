@@ -1296,13 +1296,9 @@ function createDemoHTML() {
 
         // Initialize charts for custom dashboard (empty by default)
         function initCustomDashboard() {
-            // Custom dashboards start empty
+            // Custom dashboards start completely empty
             var grid = document.querySelector('.dashboard-grid');
-            grid.innerHTML = '<div class="empty-dashboard">' +
-                '<div class="empty-icon">📊</div>' +
-                '<h3>Пустой дашборд</h3>' +
-                '<p>Нажмите кнопку "+" внизу справа, чтобы добавить первый виджет</p>' +
-                '</div>';
+            grid.innerHTML = '';
         }
 
         // Modal functions
