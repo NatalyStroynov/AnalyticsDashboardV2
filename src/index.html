@@ -220,8 +220,8 @@
         </div>
         
         <div class="top-controls">
-          <button class="top-btn">Data Sources</button>
-          <button class="filters-btn">
+          <button class="top-btn" onclick="showDataSources()">Data Sources</button>
+          <button class="filters-btn" onclick="toggleFiltersPanel()">
             <span class="material-icons">filter_list</span>
             Filters
           </button>
@@ -232,6 +232,23 @@
         <div class="dashboard-content">
           <div id="dashboardGrid" class="dashboard-grid">
             <!-- Charts will be dynamically inserted here -->
+          </div>
+          <div id="emptyDashboard" class="empty-dashboard" style="display: none;">
+            <span class="material-icons empty-icon">assessment</span>
+            <h3>No Charts Available</h3>
+            <p>This dashboard is empty. Add some charts to get started with your data visualization.</p>
+            <button class="add-chart-btn" onclick="addNewChart()">
+              <span class="material-icons">add</span>
+              Add Chart
+            </button>
+          </div>
+          
+          <!-- Add Chart Button (Always Visible) -->
+          <div style="text-align: center; margin-top: 20px;">
+            <button class="add-chart-btn" onclick="addNewChart()">
+              <span class="material-icons">add</span>
+              Add New Chart
+            </button>
           </div>
         </div>
       </div>
@@ -449,8 +466,163 @@
       document.getElementById('dashboardSelector').value = currentDashboard;
     }
 
+    // Add new chart function
+    function addNewChart() {
+      const chartTypes = ['bar', 'line', 'pie', 'doughnut'];
+      const chartType = prompt(`Select chart type:\n1. Bar\n2. Line\n3. Pie\n4. Doughnut\n\nEnter number (1-4):`);
+      
+      if (!chartType || chartType < 1 || chartType > 4) {
+        return;
+      }
+      
+      const selectedType = chartTypes[parseInt(chartType) - 1];
+      const title = prompt('Enter chart title:') || 'New Chart';
+      
+      const newChart = {
+        id: `chart-${Date.now()}`,
+        title: title,
+        type: selectedType
+      };
+      
+      // Add to current dashboard
+      dashboards[currentDashboard].charts.push(newChart);
+      
+      // Re-render dashboard
+      loadDashboard(currentDashboard);
+      
+      alert(`${title} chart added successfully!`);
+    }
+
+    // Show data sources
+    function showDataSources() {
+      alert(`Available Data Sources:\n\n• Patient Records\n• Treatment Data\n• Resource Utilization\n• Lead Management\n• Contact Information\n• Network Performance\n• Fiber Analytics`);
+    }
+
+    // Toggle filters panel
+    let filtersVisible = false;
+    function toggleFiltersPanel() {
+      filtersVisible = !filtersVisible;
+      
+      if (filtersVisible) {
+        showFiltersModal();
+      }
+    }
+
+    // Show filters modal
+    function showFiltersModal() {
+      const filterOptions = `
+Available Filters:
+
+📊 Data Filters:
+• Date Range
+• Category
+• Status
+• Region
+
+🎯 Chart Filters:
+• Chart Type
+• Data Source
+• Time Period
+• Aggregation Level
+
+Would you like to apply any filters?
+      `;
+      
+      const applyFilters = confirm(filterOptions);
+      
+      if (applyFilters) {
+        const filterType = prompt(`Select filter type:\n1. Date Range\n2. Category\n3. Status\n4. Region\n\nEnter number (1-4):`);
+        
+        if (filterType) {
+          const filterValue = prompt('Enter filter value:');
+          if (filterValue) {
+            alert(`Filter applied: ${['Date Range', 'Category', 'Status', 'Region'][parseInt(filterType) - 1]} = ${filterValue}`);
+            // Here you would implement actual filtering logic
+          }
+        }
+      }
+    }
+
+    // Add chart action menu functionality
+    function setupChartActions() {
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.action-btn')) {
+          const widget = e.target.closest('.chart-widget');
+          const chartId = widget.querySelector('canvas').id;
+          const chartTitle = widget.querySelector('.widget-title').textContent;
+          
+          const action = prompt(`Chart Actions for "${chartTitle}":\n\n1. Edit Chart\n2. Duplicate Chart\n3. Delete Chart\n4. Export Chart\n\nEnter number (1-4):`);
+          
+          switch(action) {
+            case '1':
+              editChart(chartId, chartTitle);
+              break;
+            case '2':
+              duplicateChart(chartId, chartTitle);
+              break;
+            case '3':
+              deleteChart(chartId, chartTitle);
+              break;
+            case '4':
+              exportChart(chartId, chartTitle);
+              break;
+          }
+        }
+      });
+    }
+
+    function editChart(chartId, chartTitle) {
+      const newTitle = prompt(`Edit chart title:`, chartTitle);
+      if (newTitle && newTitle !== chartTitle) {
+        // Find and update chart in current dashboard
+        const chart = dashboards[currentDashboard].charts.find(c => c.id === chartId);
+        if (chart) {
+          chart.title = newTitle;
+          loadDashboard(currentDashboard);
+          alert('Chart updated successfully!');
+        }
+      }
+    }
+
+    function duplicateChart(chartId, chartTitle) {
+      const chart = dashboards[currentDashboard].charts.find(c => c.id === chartId);
+      if (chart) {
+        const duplicatedChart = {
+          ...chart,
+          id: `chart-${Date.now()}`,
+          title: `${chartTitle} (Copy)`
+        };
+        dashboards[currentDashboard].charts.push(duplicatedChart);
+        loadDashboard(currentDashboard);
+        alert('Chart duplicated successfully!');
+      }
+    }
+
+    function deleteChart(chartId, chartTitle) {
+      if (confirm(`Delete chart "${chartTitle}"?`)) {
+        dashboards[currentDashboard].charts = dashboards[currentDashboard].charts.filter(c => c.id !== chartId);
+        loadDashboard(currentDashboard);
+        alert('Chart deleted successfully!');
+      }
+    }
+
+    function exportChart(chartId, chartTitle) {
+      const chart = chartInstances[chartId];
+      if (chart) {
+        const url = chart.toBase64Image();
+        const link = document.createElement('a');
+        link.download = `${chartTitle.replace(/\s+/g, '_')}.png`;
+        link.href = url;
+        link.click();
+        alert('Chart exported successfully!');
+      }
+    }
+
     // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', initDashboard);
+    document.addEventListener('DOMContentLoaded', function() {
+      initDashboard();
+      setupChartActions();
+    });
   </script>
 </body>
 </html>
