@@ -403,6 +403,37 @@ function createDemoHTML() {
         .chart-widget .chart-container canvas {
             background: transparent;
         }
+
+        /* Empty dashboard state */
+        .empty-dashboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            text-align: center;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .empty-dashboard h3 {
+            color: #ccc;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .empty-dashboard p {
+            color: #888;
+            font-size: 16px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -692,6 +723,7 @@ function createDemoHTML() {
         var chartCounter = 7;
         var currentDashboard = 'simulation';
         var dashboardCharts = {};
+        var dashboardCounter = 1;
 
         // Dashboard configurations
         var dashboards = {
@@ -775,6 +807,13 @@ function createDemoHTML() {
 
         // Initialize charts for specific dashboard
         function initChartsForDashboard(dashboardId) {
+            var dashboard = dashboards[dashboardId];
+            
+            if (dashboard && dashboard.isCustom) {
+                initCustomDashboard();
+                return;
+            }
+            
             switch(dashboardId) {
                 case 'simulation':
                     initSimulationCharts();
@@ -784,6 +823,9 @@ function createDemoHTML() {
                     break;
                 case 'fiber-tracts':
                     initFiberTractsCharts();
+                    break;
+                default:
+                    initCustomDashboard();
                     break;
             }
         }
@@ -1205,6 +1247,62 @@ function createDemoHTML() {
                     }
                 }
             });
+        }
+
+        // Open create dashboard modal
+        function openCreateDashboardModal() {
+            document.getElementById('createDashboardModal').style.display = 'block';
+            document.getElementById('newDashboardName').value = '';
+            document.getElementById('newDashboardDescription').value = '';
+        }
+
+        // Create new dashboard
+        function createNewDashboard() {
+            var name = document.getElementById('newDashboardName').value.trim();
+            var description = document.getElementById('newDashboardDescription').value.trim();
+            
+            if (!name) {
+                showNotification('Пожалуйста, введите название дашборда');
+                return;
+            }
+            
+            // Generate unique dashboard ID
+            var dashboardId = 'custom_' + dashboardCounter++;
+            
+            // Create new dashboard configuration
+            dashboards[dashboardId] = {
+                title: name,
+                description: description,
+                charts: [],
+                isCustom: true
+            };
+            
+            // Add to selector
+            var select = document.getElementById('dashboardSelect');
+            var option = document.createElement('option');
+            option.value = dashboardId;
+            option.textContent = name;
+            select.appendChild(option);
+            
+            // Switch to new dashboard
+            select.value = dashboardId;
+            switchDashboard(dashboardId);
+            
+            // Close modal
+            closeModal('createDashboardModal');
+            
+            showNotification('Дашборд "' + name + '" создан успешно');
+        }
+
+        // Initialize charts for custom dashboard (empty by default)
+        function initCustomDashboard() {
+            // Custom dashboards start empty
+            var grid = document.querySelector('.dashboard-grid');
+            grid.innerHTML = '<div class="empty-dashboard">' +
+                '<div class="empty-icon">📊</div>' +
+                '<h3>Пустой дашборд</h3>' +
+                '<p>Нажмите кнопку "+" внизу справа, чтобы добавить первый виджет</p>' +
+                '</div>';
         }
 
         // Modal functions
