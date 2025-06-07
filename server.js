@@ -775,18 +775,18 @@ function createDemoHTML() {
     <div id="createDashboardModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Создать новый дашборд</div>
+                <div class="modal-title">Create New Dashboard</div>
                 <button class="close" onclick="closeModal('createDashboardModal')">&times;</button>
             </div>
             <div class="form-group">
-                <label>Название дашборда:</label>
-                <input type="text" id="newDashboardName" placeholder="Введите название дашборда">
+                <label>Dashboard Name:</label>
+                <input type="text" id="newDashboardName" placeholder="Enter dashboard name">
             </div>
             <div class="form-group">
-                <label>Описание (необязательно):</label>
-                <input type="text" id="newDashboardDescription" placeholder="Описание дашборда">
+                <label>Description (optional):</label>
+                <input type="text" id="newDashboardDescription" placeholder="Dashboard description">
             </div>
-            <button class="btn-primary" onclick="createNewDashboard()">Создать дашборд</button>
+            <button class="btn-primary" onclick="createNewDashboard()">Create Dashboard</button>
         </div>
     </div>
 
@@ -936,7 +936,7 @@ function createDemoHTML() {
                             
                             // Remove the widget directly
                             widgetElement.remove();
-                            showNotification('Чарт удален');
+                            showNotification('Chart deleted');
                         }
                     };
                 })(chartId, widget);
@@ -1410,7 +1410,7 @@ function createDemoHTML() {
             var description = document.getElementById('newDashboardDescription').value.trim();
             
             if (!name) {
-                showNotification('Пожалуйста, введите название дашборда');
+                showNotification('Please enter a dashboard name');
                 return;
             }
             
@@ -1676,7 +1676,7 @@ function createDemoHTML() {
                             }, 200);
                         }
                         
-                        showNotification('Чарт "' + title + '" обновлен!');
+                        showNotification('Chart "' + title + '" updated!');
                     }
                 }
                 
