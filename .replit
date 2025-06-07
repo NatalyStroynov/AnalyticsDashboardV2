@@ -13,15 +13,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Angular Dashboard Server"
+args = "Angular Dashboard"
 
 [[workflows.workflow]]
-name = "Angular Dashboard Server"
+name = "Angular Dashboard"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node server.js"
+args = "node run-angular.js"
 waitForPort = 5000
 
 [deployment]
