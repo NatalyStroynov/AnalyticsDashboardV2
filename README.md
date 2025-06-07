@@ -1,146 +1,175 @@
 # Analytics Dashboard
 
-A modern, responsive analytics dashboard built with Angular 17 and Chart.js, featuring dynamic chart management, multiple dashboard support, and a dark theme UI.
-
-## Features
-
-- **Multiple Dashboard Support**: Switch between different dashboard types (Simulation Field Model, Lead Contacts, Fiber Tracts)
-- **Dynamic Chart Management**: Create, edit, duplicate, and delete charts with real-time updates
-- **Interactive Chart Types**: Support for bar charts, line charts, pie charts, and doughnut charts
-- **Dark Theme UI**: Modern dark interface with golden accent colors (#d4a421)
-- **Responsive Design**: Optimized for desktop and tablet viewing
-- **Real-time Notifications**: User feedback for all dashboard operations
-- **Chart.js Integration**: Powerful charting capabilities with customizable styling
-
-## Technology Stack
-
-- **Frontend**: Angular 17 (Standalone Components)
-- **Charts**: Chart.js
-- **UI Components**: Angular Material
-- **Styling**: SCSS with custom dark theme
-- **Typography**: Inter font family
-- **Icons**: Material Icons
-
-## Prerequisites
-
-- Node.js (version 18 or higher)
-- npm or yarn package manager
-- Angular CLI (version 17 or higher)
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone <your-repository-url>
-cd analytics-dashboard
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Install Angular CLI globally (if not already installed):
-```bash
-npm install -g @angular/cli
-```
-
-## Development
-
-To start the development server:
-
-```bash
-ng serve
-```
-
-The application will be available at `http://localhost:4200`
-
-## Build
-
-To build the project for production:
-
-```bash
-ng build --prod
-```
-
-The build artifacts will be stored in the `dist/` directory.
+A modern, responsive dashboard for data visualization and analytics with dark theme and interactive charts.
 
 ## Project Structure
 
-```
-src/
-├── app/
-│   ├── components/
-│   │   ├── dashboard-layout/           # Main dashboard container
-│   │   ├── simple-chart-widget/        # Individual chart components
-│   │   └── create-dashboard-modal/     # Dashboard creation modal
-│   ├── services/
-│   │   └── notification.service.ts     # User notification service
-│   ├── app.component.ts                # Root component
-│   └── app.config.ts                   # Application configuration
-├── styles.scss                         # Global styles and Material theme
-└── main.ts                            # Application bootstrap
-```
+This is a standalone web application built with:
+- **HTML5** with modern ES6+ JavaScript
+- **Chart.js** for interactive data visualizations
+- **CSS3** with dark theme styling (#2d2d2d background, #d4a421 golden accents)
+- **Express.js** backend for serving the application
+
+## Features
+
+- **Dashboard Management**: Switch between multiple dashboard types
+- **Interactive Charts**: Bar, line, pie, and doughnut charts with Chart.js
+- **Dynamic Chart Creation**: Add new charts with custom titles and types
+- **Modern Modal System**: Styled modal dialogs for all user interactions
+- **Filtering System**: Apply filters to dashboard data
+- **Data Source Integration**: Connect to various data sources
+- **Dark Theme**: Professional dark UI with golden accent colors
+- **Responsive Design**: Works on desktop and mobile devices
+- **Chart Export**: Export charts as PNG images
+
+## Quick Start
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start the server:**
+   ```bash
+   node server.js
+   ```
+
+3. **Open browser:**
+   Navigate to `http://localhost:5000`
+
+## Available Scripts
+
+- `node server.js` - Start the development server
+- `node run-angular.js` - Alternative server startup
 
 ## Dashboard Types
 
+The application includes three pre-configured dashboards:
+
 ### 1. Simulation Field Model Dashboard
-- Patient Accrual tracking (line chart)
-- Treatment Outcomes analysis (bar chart)
-- Resource Utilization breakdown (pie chart)
+- Patient Accrual (Line Chart)
+- Treatment Outcomes (Bar Chart)  
+- Resource Utilization (Pie Chart)
 
 ### 2. Lead Contacts Dashboard
-- Lead Generation trends (line chart)
-- Conversion Rate analysis (doughnut chart)
+- Lead Generation (Line Chart)
+- Conversion Rate (Doughnut Chart)
 
 ### 3. Fiber Tracts Dashboard
-- Network Performance metrics (bar chart)
+- Network Performance (Bar Chart)
 
-## Chart Features
+## Creating New Dashboards
 
-### Chart Types
-- **Bar Charts**: For categorical data comparison
-- **Line Charts**: For trend analysis over time
-- **Pie Charts**: For part-to-whole relationships
-- **Doughnut Charts**: For hierarchical data visualization
+1. Click the dashboard selector dropdown
+2. Select "+ Create New Dashboard"
+3. Enter dashboard name and description
+4. Click "Create Dashboard"
 
-### Chart Operations
-- **Edit**: Modify chart title and type
-- **Duplicate**: Create copies of existing charts
-- **Delete**: Remove charts from dashboard
-- **Drag & Drop**: Reorder charts (planned feature)
+## Adding Charts
 
-## Customization
+1. Click "Add New Chart" button
+2. Select chart type (Bar, Line, Pie, Doughnut)
+3. Enter chart title
+4. Click "Create Chart"
 
-### Theme Colors
-The dashboard uses a custom dark theme with the following key colors:
-- Primary: `#d4a421` (Golden)
-- Background: `#2d2d2d` (Dark Gray)
-- Surface: `#3a3a3a` (Medium Gray)
-- Text: `#ffffff` (White)
+## Chart Management
 
-### Adding New Dashboard Types
-1. Update the `dashboards` array in `dashboard-layout.component.ts`
-2. Add the new dashboard option to the selector dropdown
-3. Define the chart configurations for the new dashboard
+Each chart widget includes:
+- **Edit**: Modify chart title and properties
+- **Duplicate**: Create a copy of the chart
+- **Delete**: Remove chart from dashboard
+- **Export**: Download chart as PNG image
 
-### Adding New Chart Types
-1. Extend the `ChartData` interface type property
-2. Update the chart rendering logic in `simple-chart-widget.component.ts`
-3. Add the new type to chart creation modals
+## Data Sources
+
+Available data source connections:
+- Patient Records
+- Treatment Data
+- Resource Utilization
+- Lead Management
+- Contact Information
+- Network Performance
+
+## Filtering
+
+Apply filters to refine dashboard data:
+- Date Range filters
+- Category filters
+- Status filters
+- Region filters
+
+## File Structure
+
+```
+analytics-dashboard/
+├── src/
+│   ├── index.html          # Main application file
+│   ├── styles.scss         # Global styles
+│   ├── main.ts            # Bootstrap file
+│   └── app/
+│       ├── app.component.*
+│       └── app.config.ts
+├── server.js              # Express server
+├── run-angular.js         # Alternative server
+├── angular.json           # Angular configuration
+├── package.json           # Dependencies
+└── README.md             # This file
+```
+
+## Styling
+
+The application uses a consistent dark theme:
+- **Background**: #2d2d2d (Dark gray)
+- **Widget Background**: #3a3a3a (Medium gray)
+- **Accent Color**: #d4a421 (Golden yellow)
+- **Text**: #ffffff (White)
+- **Borders**: #4a4a4a (Light gray)
+
+## Technology Stack
+
+- **Frontend**: HTML5, CSS3, JavaScript ES6+
+- **Charts**: Chart.js 4.4.0
+- **Backend**: Express.js
+- **Icons**: Material Icons
+- **Fonts**: Inter (Google Fonts)
+
+## Browser Support
+
+- Chrome 80+
+- Firefox 75+
+- Safari 13+
+- Edge 80+
+
+## Development
+
+To extend the dashboard:
+
+1. **Add new chart types**: Extend the chart creation logic in index.html
+2. **Add data sources**: Modify the showDataSources() function
+3. **Customize styling**: Update CSS variables and classes
+4. **Add new dashboard types**: Extend the dashboards object
+
+## Deployment
+
+For production deployment:
+
+1. **Build optimization**: Minify CSS and JavaScript
+2. **Server configuration**: Configure Express for production
+3. **Environment variables**: Set up production environment
+4. **Security**: Add HTTPS and security headers
+
+## License
+
+MIT License - feel free to use this project for your dashboard needs.
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## Support
 
-For questions and support, please open an issue in the GitHub repository.
+For questions or issues, please create an issue in the GitHub repository.
