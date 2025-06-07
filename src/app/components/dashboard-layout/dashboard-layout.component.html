@@ -34,12 +34,12 @@
       @if (currentDashboard().charts.length > 0) {
         <div class="dashboard-grid">
           @for (chart of currentDashboard().charts; track chart.id) {
-            <app-chart-widget 
+            <app-simple-chart-widget 
               [chartData]="chart"
               (edit)="onChartEdit($event)"
               (delete)="onChartDelete($event)"
               (duplicate)="onChartDuplicate($event)">
-            </app-chart-widget>
+            </app-simple-chart-widget>
           }
         </div>
       } @else {
