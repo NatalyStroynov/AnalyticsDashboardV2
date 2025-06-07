@@ -1425,26 +1425,56 @@ function createDemoHTML() {
             closeAllDropdowns();
             
             if (confirm('Вы уверены, что хотите удалить этот чарт?')) {
-                // Find and remove the chart widget
+                // Try multiple methods to find and remove the widget
+                var widget = null;
+                
+                // Method 1: Find by canvas ID and traverse DOM
                 var canvas = document.getElementById(chartId);
                 if (canvas) {
-                    // Find parent widget using parentNode traversal
-                    var widget = canvas.parentNode.parentNode; // canvas -> chart-container -> chart-widget
-                    if (widget && widget.classList.contains('chart-widget')) {
-                        widget.parentNode.removeChild(widget);
-                        
-                        // Destroy chart instance if exists
-                        if (dashboardCharts[chartId]) {
-                            dashboardCharts[chartId].destroy();
-                            delete dashboardCharts[chartId];
+                    var element = canvas;
+                    while (element && element.parentNode) {
+                        element = element.parentNode;
+                        if (element.classList && element.classList.contains('chart-widget')) {
+                            widget = element;
+                            break;
                         }
-                        
-                        showNotification('Чарт удален');
-                    } else {
-                        showNotification('Ошибка при удалении чарта');
                     }
+                }
+                
+                // Method 2: Use querySelector to find the widget containing this canvas
+                if (!widget) {
+                    widget = document.querySelector('.chart-widget:has(#' + chartId + ')');
+                }
+                
+                // Method 3: Find all widgets and check which one contains our canvas
+                if (!widget) {
+                    var allWidgets = document.querySelectorAll('.chart-widget');
+                    for (var i = 0; i < allWidgets.length; i++) {
+                        var widgetCanvas = allWidgets[i].querySelector('#' + chartId);
+                        if (widgetCanvas) {
+                            widget = allWidgets[i];
+                            break;
+                        }
+                    }
+                }
+                
+                if (widget) {
+                    // Destroy chart instance first
+                    if (dashboardCharts[chartId]) {
+                        dashboardCharts[chartId].destroy();
+                        delete dashboardCharts[chartId];
+                    }
+                    
+                    // Remove the widget from DOM using older method for compatibility
+                    if (widget.remove) {
+                        widget.remove();
+                    } else {
+                        widget.parentNode.removeChild(widget);
+                    }
+                    
+                    showNotification('Чарт удален');
                 } else {
-                    showNotification('Чарт не найден');
+                    showNotification('Не удалось найти чарт для удаления');
                 }
             }
         }
