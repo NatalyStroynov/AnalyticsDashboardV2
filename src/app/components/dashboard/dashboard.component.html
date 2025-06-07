@@ -239,3 +239,59 @@
     </div>
   </div>
 </div>
+
+<!-- Add Chart Modal -->
+<div class="modal-overlay" *ngIf="showAddChartModal" (click)="closeAddChartModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add New Chart</h3>
+      <button class="close-btn" (click)="closeAddChartModal()">
+        <span class="material-icons">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="newChartTitle">Chart Title</label>
+        <input 
+          type="text" 
+          id="newChartTitle"
+          [(ngModel)]="newChartTitle" 
+          class="form-input" 
+          placeholder="Enter chart title">
+      </div>
+      <div class="form-group">
+        <label>Chart Type</label>
+        <div class="chart-type-selector">
+          <div class="chart-type-option" 
+               [class.selected]="newChartType === 'bar'"
+               (click)="newChartType = 'bar'">
+            <div class="chart-icon">📊</div>
+            <span>Bar Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="newChartType === 'line'"
+               (click)="newChartType = 'line'">
+            <div class="chart-icon">📈</div>
+            <span>Line Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="newChartType === 'pie'"
+               (click)="newChartType = 'pie'">
+            <div class="chart-icon">🥧</div>
+            <span>Pie Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="newChartType === 'doughnut'"
+               (click)="newChartType = 'doughnut'">
+            <div class="chart-icon">🍩</div>
+            <span>Doughnut</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeAddChartModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="addNewChart()" [disabled]="!newChartTitle?.trim()">Add Chart</button>
+    </div>
+  </div>
+</div>

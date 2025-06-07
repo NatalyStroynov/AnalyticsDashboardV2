@@ -269,6 +269,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   newDashboardDescription = '';
   showEditChartModal = false;
   editingChart: any = { id: '', title: '', type: 'bar' };
+  showAddChartModal = false;
+  newChartTitle = '';
+  newChartType: 'bar' | 'line' | 'pie' | 'doughnut' = 'bar';
   activeFilters: FilterClause[] = [
     { field: 'Gender', operator: 'includes', value: 'Male, Female' },
     { field: 'Age', operator: 'greater', value: '15' }
@@ -369,7 +372,31 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   // Chart Management
   showChartConfigModal(): void {
-    console.log('Chart configuration modal');
+    this.showAddChartModal = true;
+    this.newChartTitle = '';
+    this.newChartType = 'bar';
+  }
+
+  closeAddChartModal(): void {
+    this.showAddChartModal = false;
+    this.newChartTitle = '';
+    this.newChartType = 'bar';
+  }
+
+  addNewChart(): void {
+    if (this.newChartTitle.trim()) {
+      const newChart: Chart = {
+        id: `chart_${Date.now()}`,
+        title: this.newChartTitle.trim(),
+        type: this.newChartType,
+        data: this.generateSampleDataForType(this.newChartType),
+        options: this.generateChartOptionsForType(this.newChartType)
+      };
+      
+      this.currentDashboard.charts.push(newChart);
+      this.closeAddChartModal();
+      setTimeout(() => this.initializeCharts(), 100);
+    }
   }
 
   toggleChartMenu(chartId: string): void {
