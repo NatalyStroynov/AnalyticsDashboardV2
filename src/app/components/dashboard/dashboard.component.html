@@ -147,3 +147,40 @@
   </div>
 </div>
 
+<!-- Create Dashboard Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Create New Dashboard</h3>
+      <button class="close-btn" (click)="closeCreateModal()">
+        <span class="material-icons">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="dashboardName">Dashboard Name</label>
+        <input 
+          type="text" 
+          id="dashboardName"
+          [(ngModel)]="newDashboardName" 
+          class="form-input" 
+          placeholder="Enter dashboard name"
+          #nameInput>
+      </div>
+      <div class="form-group">
+        <label for="dashboardDescription">Description</label>
+        <textarea 
+          id="dashboardDescription"
+          [(ngModel)]="newDashboardDescription" 
+          class="form-input" 
+          placeholder="Enter dashboard description"
+          rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeCreateModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="createDashboard()" [disabled]="!newDashboardName?.trim()">Create Dashboard</button>
+    </div>
+  </div>
+</div>
+

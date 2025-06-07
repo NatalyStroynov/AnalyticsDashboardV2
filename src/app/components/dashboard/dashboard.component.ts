@@ -264,6 +264,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showDashboardDropdown = false;
   showFiltersPanel = false;
   activeChartMenu: string | null = null;
+  showCreateModal = false;
+  newDashboardName = '';
+  newDashboardDescription = '';
   activeFilters: FilterClause[] = [
     { field: 'Gender', operator: 'includes', value: 'Male, Female' },
     { field: 'Age', operator: 'greater', value: '15' }
@@ -321,7 +324,31 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   showCreateDashboardModal(): void {
     this.showDashboardDropdown = false;
-    console.log('Create dashboard modal');
+    this.showCreateModal = true;
+    this.newDashboardName = '';
+    this.newDashboardDescription = '';
+  }
+
+  closeCreateModal(): void {
+    this.showCreateModal = false;
+    this.newDashboardName = '';
+    this.newDashboardDescription = '';
+  }
+
+  createDashboard(): void {
+    if (this.newDashboardName.trim()) {
+      const newDashboard: Dashboard = {
+        id: `dashboard_${Date.now()}`,
+        name: this.newDashboardName.trim(),
+        description: this.newDashboardDescription.trim(),
+        charts: []
+      };
+      
+      this.dashboards.push(newDashboard);
+      this.currentDashboard = newDashboard;
+      this.closeCreateModal();
+      setTimeout(() => this.initializeCharts(), 100);
+    }
   }
 
   editDashboard(dashboardId: string): void {
