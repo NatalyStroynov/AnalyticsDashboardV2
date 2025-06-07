@@ -1433,8 +1433,36 @@ function createDemoHTML() {
         // Edit chart function
         function editChart(chartId) {
             closeAllDropdowns();
-            openModal('chartModal');
-            showNotification('Открытие настроек чарта: ' + chartId);
+            
+            // Find the chart widget to get current settings
+            var canvas = document.getElementById(chartId);
+            if (canvas) {
+                var widget = canvas;
+                while (widget && widget.parentNode) {
+                    widget = widget.parentNode;
+                    if (widget.classList && widget.classList.contains('chart-widget')) {
+                        break;
+                    }
+                }
+                
+                if (widget) {
+                    var titleElement = widget.querySelector('.widget-title');
+                    var currentTitle = titleElement ? titleElement.textContent : 'Chart';
+                    
+                    // Pre-populate the modal with current chart data
+                    document.getElementById('chartTitle').value = currentTitle;
+                    
+                    // Store the chart ID being edited
+                    window.editingChartId = chartId;
+                    
+                    openModal('chartModal');
+                    showNotification('Редактирование чарта: ' + currentTitle);
+                } else {
+                    showNotification('Чарт не найден для редактирования');
+                }
+            } else {
+                showNotification('Элемент чарта не найден');
+            }
         }
 
         // Delete chart function
@@ -1522,6 +1550,9 @@ function createDemoHTML() {
 
         // Chart management functions
         function addChart() {
+            // Clear editing mode when adding new chart
+            window.editingChartId = null;
+            document.getElementById('chartTitle').value = '';
             openModal('chartModal');
         }
 
@@ -1546,11 +1577,41 @@ function createDemoHTML() {
         function saveChart() {
             var title = document.getElementById('chartTitle').value || 'New Chart';
             var type = document.getElementById('chartType').value;
-            var grid = document.querySelector('.dashboard-grid');
-            var newWidget = createChartWidget(chartCounter++, title, type);
-            grid.appendChild(newWidget);
+            
+            // Check if we're editing an existing chart
+            if (window.editingChartId) {
+                // Update existing chart
+                var canvas = document.getElementById(window.editingChartId);
+                if (canvas) {
+                    var widget = canvas;
+                    while (widget && widget.parentNode) {
+                        widget = widget.parentNode;
+                        if (widget.classList && widget.classList.contains('chart-widget')) {
+                            break;
+                        }
+                    }
+                    
+                    if (widget) {
+                        var titleElement = widget.querySelector('.widget-title');
+                        if (titleElement) {
+                            titleElement.textContent = title;
+                        }
+                        
+                        showNotification('Чарт "' + title + '" обновлен!');
+                    }
+                }
+                
+                // Clear editing mode
+                window.editingChartId = null;
+            } else {
+                // Create new chart
+                var grid = document.querySelector('.dashboard-grid');
+                var newWidget = createChartWidget(chartCounter++, title, type);
+                grid.appendChild(newWidget);
+                showNotification('Чарт "' + title + '" создан!');
+            }
+            
             closeModal('chartModal');
-            showNotification('Chart "' + title + '" created!');
             document.getElementById('chartTitle').value = '';
         }
 
