@@ -267,6 +267,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showCreateModal = false;
   newDashboardName = '';
   newDashboardDescription = '';
+  showEditChartModal = false;
+  editingChart: any = { id: '', title: '', type: 'bar' };
   activeFilters: FilterClause[] = [
     { field: 'Gender', operator: 'includes', value: 'Male, Female' },
     { field: 'Age', operator: 'greater', value: '15' }
@@ -376,7 +378,107 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   editChart(chartId: string): void {
     this.activeChartMenu = null;
-    console.log(`Editing chart: ${chartId}`);
+    const chart = this.currentDashboard.charts.find(c => c.id === chartId);
+    if (chart) {
+      this.editingChart = { ...chart };
+      this.showEditChartModal = true;
+    }
+  }
+
+  closeEditChartModal(): void {
+    this.showEditChartModal = false;
+    this.editingChart = { id: '', title: '', type: 'bar' };
+  }
+
+  saveChartChanges(): void {
+    if (this.editingChart.title.trim()) {
+      const chartIndex = this.currentDashboard.charts.findIndex(c => c.id === this.editingChart.id);
+      if (chartIndex !== -1) {
+        this.currentDashboard.charts[chartIndex].title = this.editingChart.title.trim();
+        this.currentDashboard.charts[chartIndex].type = this.editingChart.type;
+        
+        // Update chart options for new type
+        if (this.editingChart.type !== this.currentDashboard.charts[chartIndex].type) {
+          this.currentDashboard.charts[chartIndex].data = this.generateSampleDataForType(this.editingChart.type);
+          this.currentDashboard.charts[chartIndex].options = this.generateChartOptionsForType(this.editingChart.type);
+        }
+        
+        this.closeEditChartModal();
+        setTimeout(() => this.initializeCharts(), 100);
+      }
+    }
+  }
+
+  private generateSampleDataForType(type: string): any {
+    const labels = ['A', 'B', 'C', 'D'];
+    const data = [Math.floor(Math.random() * 100), Math.floor(Math.random() * 100), 
+                  Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)];
+    
+    if (type === 'pie' || type === 'doughnut') {
+      return {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: ['#d4a421', '#4CAF50', '#2196F3', '#ff9800'],
+          borderWidth: 0
+        }]
+      };
+    }
+    
+    return {
+      labels,
+      datasets: [{
+        label: 'Data',
+        data,
+        backgroundColor: type === 'line' ? 'rgba(212, 164, 33, 0.1)' : '#d4a421',
+        borderColor: '#d4a421',
+        tension: type === 'line' ? 0.1 : undefined
+      }]
+    };
+  }
+
+  private generateChartOptionsForType(type: string): any {
+    const baseOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          display: type === 'pie' || type === 'doughnut',
+          position: 'right',
+          labels: { 
+            color: '#ffffff',
+            font: { size: 12 },
+            usePointStyle: true
+          }
+        }
+      }
+    };
+
+    if (type === 'pie' || type === 'doughnut') {
+      return baseOptions;
+    }
+
+    return {
+      ...baseOptions,
+      scales: {
+        x: { 
+          ticks: { 
+            color: '#888888',
+            font: { size: 11 }
+          }, 
+          grid: { color: '#404040' },
+          border: { color: '#404040' }
+        },
+        y: { 
+          ticks: { 
+            color: '#888888',
+            font: { size: 11 }
+          }, 
+          grid: { color: '#404040' },
+          border: { color: '#404040' }
+        }
+      }
+    };
   }
 
   duplicateChart(chartId: string): void {

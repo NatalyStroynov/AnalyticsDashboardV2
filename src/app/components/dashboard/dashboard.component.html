@@ -184,3 +184,58 @@
   </div>
 </div>
 
+<!-- Edit Chart Modal -->
+<div class="modal-overlay" *ngIf="showEditChartModal" (click)="closeEditChartModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Edit Chart</h3>
+      <button class="close-btn" (click)="closeEditChartModal()">
+        <span class="material-icons">×</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="editChartTitle">Chart Title</label>
+        <input 
+          type="text" 
+          id="editChartTitle"
+          [(ngModel)]="editingChart.title" 
+          class="form-input" 
+          placeholder="Enter chart title">
+      </div>
+      <div class="form-group">
+        <label>Chart Type</label>
+        <div class="chart-type-selector">
+          <div class="chart-type-option" 
+               [class.selected]="editingChart.type === 'bar'"
+               (click)="editingChart.type = 'bar'">
+            <div class="chart-icon">📊</div>
+            <span>Bar Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="editingChart.type === 'line'"
+               (click)="editingChart.type = 'line'">
+            <div class="chart-icon">📈</div>
+            <span>Line Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="editingChart.type === 'pie'"
+               (click)="editingChart.type = 'pie'">
+            <div class="chart-icon">🥧</div>
+            <span>Pie Chart</span>
+          </div>
+          <div class="chart-type-option" 
+               [class.selected]="editingChart.type === 'doughnut'"
+               (click)="editingChart.type = 'doughnut'">
+            <div class="chart-icon">🍩</div>
+            <span>Doughnut</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeEditChartModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveChartChanges()" [disabled]="!editingChart.title?.trim()">Save Changes</button>
+    </div>
+  </div>
+</div>
