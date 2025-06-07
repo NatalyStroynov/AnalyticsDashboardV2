@@ -82,6 +82,57 @@ function createDemoHTML() {
         .add-dashboard-btn-small .material-icons {
             font-size: 18px;
         }
+
+        /* Chart action dropdown menu */
+        .chart-actions {
+            position: relative;
+            display: inline-block;
+        }
+
+        .chart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 4px;
+            min-width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: none;
+        }
+
+        .chart-dropdown.show {
+            display: block;
+        }
+
+        .chart-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: #ccc;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+        }
+
+        .chart-dropdown-item:hover {
+            background-color: #4a4a4a;
+            color: white;
+        }
+
+        .chart-dropdown-item:first-child {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .chart-dropdown-item:last-child {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
         
         .top-controls {
             display: flex;
@@ -776,19 +827,26 @@ function createDemoHTML() {
             var grid = document.querySelector('.dashboard-grid');
             
             config.charts.forEach(function(chartTitle, index) {
+                var chartId = 'chart' + (index + 1);
                 var widget = document.createElement('div');
                 widget.className = 'chart-widget';
                 widget.innerHTML = 
                     '<div class="widget-header">' +
                         '<div class="widget-title">' + chartTitle + '</div>' +
                         '<div class="widget-actions">' +
-                            '<button class="action-btn" onclick="editChart(' + (index + 1) + ')" title="More options">' +
-                                '<span class="material-icons">more_vert</span>' +
-                            '</button>' +
+                            '<div class="chart-actions">' +
+                                '<button class="action-btn" onclick="toggleChartDropdown(\'' + chartId + '\')" title="More options">' +
+                                    '<span class="material-icons">more_vert</span>' +
+                                '</button>' +
+                                '<div class="chart-dropdown" id="dropdown-' + chartId + '">' +
+                                    '<button class="chart-dropdown-item" onclick="editChart(\'' + chartId + '\')">Редактировать чарт</button>' +
+                                    '<button class="chart-dropdown-item" onclick="deleteChart(\'' + chartId + '\')">Удалить чарт</button>' +
+                                '</div>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
                     '<div class="chart-container">' +
-                        '<canvas id="chart' + (index + 1) + '"></canvas>' +
+                        '<canvas id="' + chartId + '"></canvas>' +
                     '</div>';
                 
                 grid.appendChild(widget);
@@ -1300,6 +1358,69 @@ function createDemoHTML() {
             var grid = document.querySelector('.dashboard-grid');
             grid.innerHTML = '';
         }
+
+        // Toggle chart dropdown menu
+        function toggleChartDropdown(chartId) {
+            var dropdown = document.getElementById('dropdown-' + chartId);
+            var isVisible = dropdown.classList.contains('show');
+            
+            // Close all other dropdowns
+            var allDropdowns = document.querySelectorAll('.chart-dropdown');
+            allDropdowns.forEach(function(dd) {
+                dd.classList.remove('show');
+            });
+            
+            // Toggle current dropdown
+            if (!isVisible) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        // Edit chart function
+        function editChart(chartId) {
+            closeAllDropdowns();
+            openModal('chartModal');
+            showNotification('Открытие настроек чарта: ' + chartId);
+        }
+
+        // Delete chart function
+        function deleteChart(chartId) {
+            closeAllDropdowns();
+            
+            if (confirm('Вы уверены, что хотите удалить этот чарт?')) {
+                // Find and remove the chart widget
+                var canvas = document.getElementById(chartId);
+                if (canvas) {
+                    var widget = canvas.closest('.chart-widget');
+                    if (widget) {
+                        widget.remove();
+                    }
+                    
+                    // Destroy chart instance if exists
+                    if (dashboardCharts[chartId]) {
+                        dashboardCharts[chartId].destroy();
+                        delete dashboardCharts[chartId];
+                    }
+                    
+                    showNotification('Чарт удален');
+                }
+            }
+        }
+
+        // Close all dropdowns
+        function closeAllDropdowns() {
+            var allDropdowns = document.querySelectorAll('.chart-dropdown');
+            allDropdowns.forEach(function(dropdown) {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.chart-actions')) {
+                closeAllDropdowns();
+            }
+        });
 
         // Modal functions
         function openModal(modalId) {
