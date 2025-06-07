@@ -9,8 +9,424 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #2d2d2d;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .dashboard-container {
+      background: #2d2d2d;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      background: #3a3a3a;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #4a4a4a;
+    }
+
+    .dashboard-selector {
+      background: #2d2d2d;
+      border: 1px solid #555;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      min-width: 280px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .dashboard-selector:focus {
+      outline: none;
+      border-color: #d4a421;
+    }
+
+    .dashboard-selector option {
+      background: #2d2d2d;
+      color: white;
+    }
+
+    .create-option {
+      color: #d4a421 !important;
+      font-weight: 500;
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .top-btn, .filters-btn {
+      background: #555;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .top-btn:hover, .filters-btn:hover {
+      background: #666;
+    }
+
+    .main-container {
+      padding: 20px;
+    }
+
+    .dashboard-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .chart-widget {
+      background: #3a3a3a;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 300px;
+      border: 1px solid #4a4a4a;
+      transition: all 0.2s ease;
+    }
+
+    .chart-widget:hover {
+      border-color: #555;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .widget-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .action-btn {
+      color: #ccc;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #d4a421;
+    }
+
+    .widget-content {
+      height: 250px;
+      position: relative;
+    }
+
+    .widget-content canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .empty-dashboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      color: #ccc;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      color: #666;
+    }
+
+    .empty-dashboard h3 {
+      color: #ccc;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .empty-dashboard p {
+      color: #888;
+      font-size: 16px;
+      max-width: 400px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .add-chart-btn {
+      background: #d4a421;
+      color: #2d2d2d;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-chart-btn:hover {
+      background: #e6b82e;
+    }
+
+    .material-icons {
+      font-family: 'Material Icons';
+      font-size: 20px;
+    }
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+  <div id="app">
+    <div class="dashboard-container">
+      <div class="top-bar">
+        <div class="dashboard-selector-wrapper">
+          <select id="dashboardSelector" class="dashboard-selector">
+            <option value="simulation">Simulation Field Model Dashboard</option>
+            <option value="lead-contact">Lead Contacts Dashboard</option>
+            <option value="fiber-tracts">Fiber Tracts Dashboard</option>
+            <option value="create-new" class="create-option">+ Create New Dashboard</option>
+          </select>
+        </div>
+        
+        <div class="top-controls">
+          <button class="top-btn">Data Sources</button>
+          <button class="filters-btn">
+            <span class="material-icons">filter_list</span>
+            Filters
+          </button>
+        </div>
+      </div>
+
+      <div class="main-container">
+        <div class="dashboard-content">
+          <div id="dashboardGrid" class="dashboard-grid">
+            <!-- Charts will be dynamically inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dashboard data
+    const dashboards = {
+      'simulation': {
+        name: 'Simulation Field Model Dashboard',
+        charts: [
+          { id: 'chart1', title: 'Patient Accrual', type: 'line' },
+          { id: 'chart2', title: 'Treatment Outcomes', type: 'bar' },
+          { id: 'chart3', title: 'Resource Utilization', type: 'pie' }
+        ]
+      },
+      'lead-contact': {
+        name: 'Lead Contacts Dashboard',
+        charts: [
+          { id: 'chart4', title: 'Lead Generation', type: 'line' },
+          { id: 'chart5', title: 'Conversion Rate', type: 'doughnut' }
+        ]
+      },
+      'fiber-tracts': {
+        name: 'Fiber Tracts Dashboard',
+        charts: [
+          { id: 'chart6', title: 'Network Performance', type: 'bar' }
+        ]
+      }
+    };
+
+    let currentDashboard = 'simulation';
+    let chartInstances = {};
+
+    // Initialize dashboard
+    function initDashboard() {
+      loadDashboard(currentDashboard);
+      
+      document.getElementById('dashboardSelector').addEventListener('change', function(e) {
+        if (e.target.value === 'create-new') {
+          createNewDashboard();
+          return;
+        }
+        currentDashboard = e.target.value;
+        loadDashboard(currentDashboard);
+      });
+    }
+
+    // Load dashboard charts
+    function loadDashboard(dashboardId) {
+      const dashboard = dashboards[dashboardId];
+      const grid = document.getElementById('dashboardGrid');
+      
+      // Clear existing charts
+      Object.values(chartInstances).forEach(chart => chart.destroy());
+      chartInstances = {};
+      grid.innerHTML = '';
+
+      // Create chart widgets
+      dashboard.charts.forEach(chartConfig => {
+        const widget = createChartWidget(chartConfig);
+        grid.appendChild(widget);
+        setTimeout(() => createChart(chartConfig), 100);
+      });
+    }
+
+    // Create chart widget HTML
+    function createChartWidget(chartConfig) {
+      const widget = document.createElement('div');
+      widget.className = 'chart-widget';
+      widget.innerHTML = \`
+        <div class="widget-header">
+          <div class="widget-title">\${chartConfig.title}</div>
+          <button class="action-btn">
+            <span class="material-icons">more_vert</span>
+          </button>
+        </div>
+        <div class="widget-content">
+          <canvas id="\${chartConfig.id}"></canvas>
+        </div>
+      \`;
+      return widget;
+    }
+
+    // Create Chart.js chart
+    function createChart(chartConfig) {
+      const canvas = document.getElementById(chartConfig.id);
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      let data, options;
+
+      switch(chartConfig.type) {
+        case 'pie':
+        case 'doughnut':
+          data = {
+            labels: ['Category A', 'Category B', 'Category C', 'Category D'],
+            datasets: [{
+              data: [35, 25, 20, 20],
+              backgroundColor: ['#2196f3', '#4caf50', '#ff9800', '#e91e63'],
+              borderWidth: 0
+            }]
+          };
+          options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: { color: '#ccc', usePointStyle: true }
+              }
+            }
+          };
+          break;
+          
+        case 'line':
+          data = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+              label: 'Data Points',
+              data: [12, 19, 15, 25, 22, 30],
+              borderColor: '#d4a421',
+              backgroundColor: 'rgba(212, 164, 33, 0.1)',
+              borderWidth: 2,
+              fill: true,
+              pointBackgroundColor: '#d4a421'
+            }]
+          };
+          options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: '#4a4a4a' },
+                ticks: { color: '#ccc' }
+              },
+              y: {
+                grid: { color: '#4a4a4a' },
+                ticks: { color: '#ccc' },
+                beginAtZero: true
+              }
+            }
+          };
+          break;
+          
+        default: // bar chart
+          data = {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            datasets: [{
+              label: 'Values',
+              data: [45, 62, 38, 55],
+              backgroundColor: '#d4a421',
+              borderRadius: 4
+            }]
+          };
+          options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: '#4a4a4a' },
+                ticks: { color: '#ccc' }
+              },
+              y: {
+                grid: { color: '#4a4a4a' },
+                ticks: { color: '#ccc' },
+                beginAtZero: true
+              }
+            }
+          };
+          break;
+      }
+
+      chartInstances[chartConfig.id] = new Chart(ctx, {
+        type: chartConfig.type,
+        data: data,
+        options: options
+      });
+    }
+
+    // Create new dashboard
+    function createNewDashboard() {
+      const name = prompt('Enter dashboard name:');
+      if (name && name.trim()) {
+        alert(\`Dashboard "\${name}" would be created here\`);
+      }
+      // Reset selector
+      document.getElementById('dashboardSelector').value = currentDashboard;
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
 </body>
 </html>
