@@ -255,7 +255,7 @@ function createDemoHTML() {
 </head>
 <body>
     <div class="demo-note">
-        <strong>Angular 17 Analytics Dashboard</strong> - Демонстрация архитектуры с компонентами, сервисами и интерактивностью
+        <strong>Angular 17 Analytics Dashboard</strong> - Architecture demonstration with components, services and interactivity
     </div>
 
     <div class="dashboard-container">
@@ -263,24 +263,24 @@ function createDemoHTML() {
         <div class="sidebar">
             <h2>
                 <span class="material-icons">dashboard</span>
-                Дашборд
+                Dashboard
             </h2>
             
             <!-- Filters Panel -->
             <div class="filter-section">
-                <h3>Фильтры</h3>
+                <h3>Filters</h3>
                 <div class="filter-item">
-                    <strong>Регион</strong><br>
-                    <small>Type: Select | Operator: Equals | Value: Москва</small>
+                    <strong>Region</strong><br>
+                    <small>Type: Select | Operator: Equals | Value: North America</small>
                 </div>
                 <div class="filter-item">
                     <strong>Age</strong><br>
-                    <small>Type: Number | Operator: Greater Than | Value: 15</small>
+                    <small>Type: Number | Operator: Greater Than | Value: 18</small>
                 </div>
                 
                 <button class="btn" onclick="addFilter()">
                     <span class="material-icons">add</span>
-                    Добавить фильтр
+                    Add Filter
                 </button>
             </div>
         </div>
@@ -290,14 +290,14 @@ function createDemoHTML() {
             <div class="dashboard-info">
                 <h3>Angular 17 Dashboard Architecture</h3>
                 <div class="architecture-info">
-                    <h4>Основные компоненты</h4>
+                    <h4>Core Components</h4>
                     <div class="code-structure">
-                        ✓ DashboardPageComponent - Основная страница<br>
-                        ✓ ChartWidgetComponent - Компонент графика<br>
-                        ✓ FiltersPanelComponent - Панель фильтров<br>
-                        ✓ ChartConfigComponent - Настройка графиков<br>
-                        ✓ DashboardService - Управление состоянием<br>
-                        ✓ DataService - Обработка данных<br>
+                        ✓ DashboardPageComponent - Main dashboard page<br>
+                        ✓ ChartWidgetComponent - Chart widget component<br>
+                        ✓ FiltersPanelComponent - Filters panel<br>
+                        ✓ ChartConfigComponent - Chart configuration<br>
+                        ✓ DashboardService - State management<br>
+                        ✓ DataService - Data processing<br>
                         ✓ Signal-based state management<br>
                         ✓ Chart.js integration<br>
                         ✓ State persistence
@@ -306,7 +306,7 @@ function createDemoHTML() {
                 
                 <button class="btn" onclick="addChart()">
                     <span class="material-icons">add</span>
-                    Добавить график
+                    Add Chart
                 </button>
             </div>
 
@@ -317,16 +317,16 @@ function createDemoHTML() {
                     <div class="widget-header">
                         <div class="widget-title">
                             <span class="material-icons">bar_chart</span>
-                            Пользователи по возрасту
+                            Users by Age
                         </div>
                         <div class="widget-actions">
-                            <button class="action-btn" onclick="editChart(1)" title="Редактировать">
+                            <button class="action-btn" onclick="editChart(1)" title="Edit">
                                 <span class="material-icons">edit</span>
                             </button>
-                            <button class="action-btn" onclick="duplicateChart(1)" title="Дублировать">
+                            <button class="action-btn" onclick="duplicateChart(1)" title="Duplicate">
                                 <span class="material-icons">content_copy</span>
                             </button>
-                            <button class="action-btn" onclick="deleteChart(1)" title="Удалить">
+                            <button class="action-btn" onclick="deleteChart(1)" title="Delete">
                                 <span class="material-icons">delete</span>
                             </button>
                         </div>
@@ -350,16 +350,16 @@ function createDemoHTML() {
                     <div class="widget-header">
                         <div class="widget-title">
                             <span class="material-icons">pie_chart</span>
-                            Распределение по полу
+                            Gender Distribution
                         </div>
                         <div class="widget-actions">
-                            <button class="action-btn" onclick="editChart(2)" title="Редактировать">
+                            <button class="action-btn" onclick="editChart(2)" title="Edit">
                                 <span class="material-icons">edit</span>
                             </button>
-                            <button class="action-btn" onclick="duplicateChart(2)" title="Дублировать">
+                            <button class="action-btn" onclick="duplicateChart(2)" title="Duplicate">
                                 <span class="material-icons">content_copy</span>
                             </button>
-                            <button class="action-btn" onclick="deleteChart(2)" title="Удалить">
+                            <button class="action-btn" onclick="deleteChart(2)" title="Delete">
                                 <span class="material-icons">delete</span>
                             </button>
                         </div>
@@ -385,57 +385,57 @@ function createDemoHTML() {
     <div id="chartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('chartModal')">&times;</span>
-            <h3>Настройка графика</h3>
+            <h3>Chart Configuration</h3>
             <div class="form-group">
-                <label>Название графика:</label>
-                <input type="text" id="chartTitle" placeholder="Введите название">
+                <label>Chart Title:</label>
+                <input type="text" id="chartTitle" placeholder="Enter chart title">
             </div>
             <div class="form-group">
-                <label>Тип графика:</label>
+                <label>Chart Type:</label>
                 <select id="chartType">
-                    <option value="bar">Столбчатая диаграмма</option>
-                    <option value="line">Линейный график</option>
-                    <option value="pie">Круговая диаграмма</option>
-                    <option value="doughnut">Кольцевая диаграмма</option>
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="pie">Pie Chart</option>
+                    <option value="doughnut">Doughnut Chart</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Источник данных:</label>
+                <label>Data Source:</label>
                 <select id="dataSource">
-                    <option value="users">Пользователи</option>
-                    <option value="sales">Продажи</option>
-                    <option value="analytics">Аналитика</option>
+                    <option value="users">Users</option>
+                    <option value="sales">Sales</option>
+                    <option value="analytics">Analytics</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Поле X (горизонтальная ось):</label>
+                <label>X Field (horizontal axis):</label>
                 <select id="xField">
-                    <option value="age">Возраст</option>
-                    <option value="gender">Пол</option>
-                    <option value="region">Регион</option>
-                    <option value="date">Дата</option>
+                    <option value="age">Age</option>
+                    <option value="gender">Gender</option>
+                    <option value="region">Region</option>
+                    <option value="date">Date</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Поле Y (вертикальная ось):</label>
+                <label>Y Field (vertical axis):</label>
                 <select id="yField">
-                    <option value="count">Количество</option>
-                    <option value="sum">Сумма</option>
-                    <option value="average">Среднее</option>
+                    <option value="count">Count</option>
+                    <option value="sum">Sum</option>
+                    <option value="average">Average</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Агрегация:</label>
+                <label>Aggregation:</label>
                 <select id="aggregation">
-                    <option value="count">Count (Подсчет)</option>
-                    <option value="sum">Sum (Сумма)</option>
-                    <option value="avg">Average (Среднее)</option>
-                    <option value="min">Minimum (Минимум)</option>
-                    <option value="max">Maximum (Максимум)</option>
-                    <option value="distinct">Distinct Count (Уникальные)</option>
+                    <option value="count">Count</option>
+                    <option value="sum">Sum</option>
+                    <option value="avg">Average</option>
+                    <option value="min">Minimum</option>
+                    <option value="max">Maximum</option>
+                    <option value="distinct">Distinct Count</option>
                 </select>
             </div>
-            <button class="btn" onclick="saveChart()">Сохранить график</button>
+            <button class="btn" onclick="saveChart()">Save Chart</button>
         </div>
     </div>
 
@@ -443,45 +443,45 @@ function createDemoHTML() {
     <div id="filterModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('filterModal')">&times;</span>
-            <h3>Добавить фильтр</h3>
+            <h3>Add Filter</h3>
             <div class="form-group">
-                <label>Поле для фильтрации:</label>
+                <label>Filter Field:</label>
                 <select id="filterField">
-                    <option value="age">Возраст</option>
-                    <option value="gender">Пол</option>
-                    <option value="region">Регион</option>
-                    <option value="status">Статус</option>
-                    <option value="date">Дата регистрации</option>
+                    <option value="age">Age</option>
+                    <option value="gender">Gender</option>
+                    <option value="region">Region</option>
+                    <option value="status">Status</option>
+                    <option value="date">Registration Date</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Тип фильтра:</label>
+                <label>Filter Type:</label>
                 <select id="filterType" onchange="updateFilterOptions()">
-                    <option value="text">Текст</option>
-                    <option value="number">Число</option>
-                    <option value="select">Выбор</option>
-                    <option value="date">Дата</option>
-                    <option value="range">Диапазон</option>
-                    <option value="boolean">Да/Нет</option>
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="select">Select</option>
+                    <option value="date">Date</option>
+                    <option value="range">Range</option>
+                    <option value="boolean">Boolean</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Оператор:</label>
+                <label>Operator:</label>
                 <select id="filterOperator">
-                    <option value="eq">Равно</option>
-                    <option value="ne">Не равно</option>
-                    <option value="gt">Больше</option>
-                    <option value="gte">Больше или равно</option>
-                    <option value="lt">Меньше</option>
-                    <option value="lte">Меньше или равно</option>
-                    <option value="contains">Содержит</option>
+                    <option value="eq">Equals</option>
+                    <option value="ne">Not Equals</option>
+                    <option value="gt">Greater Than</option>
+                    <option value="gte">Greater Than or Equal</option>
+                    <option value="lt">Less Than</option>
+                    <option value="lte">Less Than or Equal</option>
+                    <option value="contains">Contains</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Значение:</label>
-                <input type="text" id="filterValue" placeholder="Введите значение">
+                <label>Value:</label>
+                <input type="text" id="filterValue" placeholder="Enter value">
             </div>
-            <button class="btn" onclick="saveFilter()">Добавить фильтр</button>
+            <button class="btn" onclick="saveFilter()">Add Filter</button>
         </div>
     </div>
 
@@ -534,7 +534,7 @@ function createDemoHTML() {
             new Chart(ctx2, {
                 type: 'pie',
                 data: {
-                    labels: ['Мужчины', 'Женщины', 'Не указано'],
+                    labels: ['Male', 'Female', 'Not Specified'],
                     datasets: [{
                         data: [312, 298, 45],
                         backgroundColor: [
@@ -567,31 +567,31 @@ function createDemoHTML() {
         }
 
         function editChart(chartId) {
-            showNotification('Редактирование графика ' + chartId);
+            showNotification('Editing chart ' + chartId);
             openModal('chartModal');
         }
 
         function duplicateChart(chartId) {
             var grid = document.querySelector('.dashboard-grid');
-            var newWidget = createChartWidget(chartCounter++, 'Копия графика', 'bar');
+            var newWidget = createChartWidget(chartCounter++, 'Chart Copy', 'bar');
             grid.appendChild(newWidget);
-            showNotification('График дублирован!');
+            showNotification('Chart duplicated!');
         }
 
         function deleteChart(chartId) {
-            if (confirm('Удалить этот график?')) {
-                showNotification('График удален');
+            if (confirm('Delete this chart?')) {
+                showNotification('Chart deleted');
             }
         }
 
         function saveChart() {
-            var title = document.getElementById('chartTitle').value || 'Новый график';
+            var title = document.getElementById('chartTitle').value || 'New Chart';
             var type = document.getElementById('chartType').value;
             var grid = document.querySelector('.dashboard-grid');
             var newWidget = createChartWidget(chartCounter++, title, type);
             grid.appendChild(newWidget);
             closeModal('chartModal');
-            showNotification('График "' + title + '" создан!');
+            showNotification('Chart "' + title + '" created!');
             document.getElementById('chartTitle').value = '';
         }
 
@@ -621,11 +621,11 @@ function createDemoHTML() {
                     '<canvas id="chart' + id + '"></canvas>' +
                 '</div>' +
                 '<div class="architecture-info">' +
-                    '<h4>Динамический график</h4>' +
+                    '<h4>Dynamic Chart</h4>' +
                     '<div class="code-structure">' +
-                        'Тип: ' + type + '<br>' +
-                        'Создан через ChartConfig<br>' +
-                        'Поддержка редактирования' +
+                        'Type: ' + type + '<br>' +
+                        'Created via ChartConfig<br>' +
+                        'Supports editing operations' +
                     '</div>' +
                 '</div>';
 
