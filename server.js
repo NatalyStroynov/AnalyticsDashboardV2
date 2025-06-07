@@ -45,6 +45,12 @@ function createDemoHTML() {
             border-bottom: 1px solid #4a4a4a;
         }
         
+        .dashboard-selector-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .dashboard-selector {
             background: #2d2d2d;
             border: 1px solid #555;
@@ -52,6 +58,29 @@ function createDemoHTML() {
             padding: 8px 12px;
             border-radius: 4px;
             min-width: 250px;
+        }
+
+        .add-dashboard-btn-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: #d4a421;
+            border: none;
+            color: #2d2d2d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .add-dashboard-btn-small:hover {
+            background: #e6b82e;
+            transform: scale(1.05);
+        }
+
+        .add-dashboard-btn-small .material-icons {
+            font-size: 18px;
         }
         
         .top-controls {
@@ -379,11 +408,16 @@ function createDemoHTML() {
 <body>
     <!-- Top Navigation Bar -->
     <div class="top-bar">
-        <select class="dashboard-selector" onchange="switchDashboard(this.value)">
-            <option value="simulation">Simulation Field Model Dashboard</option>
-            <option value="lead-contact">Lead Contacts Dashboard</option>
-            <option value="fiber-tracts">Fiber Tracts Dashboard</option>
-        </select>
+        <div class="dashboard-selector-container">
+            <select class="dashboard-selector" id="dashboardSelect" onchange="switchDashboard(this.value)">
+                <option value="simulation">Simulation Field Model Dashboard</option>
+                <option value="lead-contact">Lead Contacts Dashboard</option>
+                <option value="fiber-tracts">Fiber Tracts Dashboard</option>
+            </select>
+            <button class="add-dashboard-btn-small" onclick="openCreateDashboardModal()" title="Создать новый дашборд">
+                <span class="material-icons">add</span>
+            </button>
+        </div>
         
         <div class="top-controls">
             <button class="top-btn" onclick="openDataSources()">Data Sources</button>
@@ -628,6 +662,25 @@ function createDemoHTML() {
                 <input type="text" id="filterValue" placeholder="Enter value">
             </div>
             <button class="btn-primary" onclick="saveFilter()">Add Filter</button>
+        </div>
+    </div>
+
+    <!-- Create Dashboard Modal -->
+    <div id="createDashboardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Создать новый дашборд</div>
+                <button class="close" onclick="closeModal('createDashboardModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Название дашборда:</label>
+                <input type="text" id="newDashboardName" placeholder="Введите название дашборда">
+            </div>
+            <div class="form-group">
+                <label>Описание (необязательно):</label>
+                <input type="text" id="newDashboardDescription" placeholder="Описание дашборда">
+            </div>
+            <button class="btn-primary" onclick="createNewDashboard()">Создать дашборд</button>
         </div>
     </div>
 
