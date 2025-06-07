@@ -58,7 +58,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(charts => {
         if (charts && charts.length > 0) {
-          setTimeout(() => this.initializeCharts(), 200);
+          // Wait for DOM to be fully rendered
+          setTimeout(() => this.initializeCharts(), 500);
         }
       });
 
@@ -96,17 +97,31 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private initializeCharts(): void {
     if (!this.currentDashboard || !this.currentDashboard.charts) return;
     
-    // Wait for DOM to be ready
-    setTimeout(() => {
-      this.currentDashboard!.charts.forEach(chart => {
-        const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
-        if (canvas && canvas.getContext) {
-          this.renderChartOnCanvas(canvas, chart);
-        } else {
-          console.warn(`Canvas element not found for chart: ${chart.id}`);
+    console.log('Initializing charts for dashboard:', this.currentDashboard.name);
+    console.log('Number of charts:', this.currentDashboard.charts.length);
+    
+    this.currentDashboard.charts.forEach(chart => {
+      const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
+      console.log(`Looking for canvas with ID: ${chart.id}`);
+      
+      if (canvas) {
+        console.log('Canvas found:', canvas.width, 'x', canvas.height);
+        // Ensure canvas is properly sized
+        if (canvas.width === 0 || canvas.height === 0) {
+          canvas.width = 400;
+          canvas.height = 220;
         }
-      });
-    }, 50);
+        this.renderChartOnCanvas(canvas, chart);
+      } else {
+        console.error(`Canvas element not found for chart ID: ${chart.id}`);
+        // Try to find it with a different approach
+        const allCanvases = document.querySelectorAll('canvas');
+        console.log('All canvas elements found:', allCanvases.length);
+        allCanvases.forEach((c, index) => {
+          console.log(`Canvas ${index}:`, c.id, c.className);
+        });
+      }
+    });
   }
 
   private initializeChartsFromArray(charts: Chart[]): void {
@@ -129,6 +144,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     console.log('Rendering chart:', chart.title, 'Type:', chart.type);
+    console.log('Chart data:', JSON.stringify(chart.data, null, 2));
+    console.log('Canvas element:', canvas);
+    console.log('Canvas context:', ctx);
 
     const defaultOptions = {
       responsive: true,
@@ -160,22 +178,80 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       } : {}
     };
 
-    const newChart = new ChartJS(ctx, {
-      type: chart.type as any,
-      data: chart.data,
-      options: {
-        ...defaultOptions,
-        ...chart.options
+    // Merge options properly, avoiding conflicts
+    const finalOptions = chart.type === 'pie' || chart.type === 'doughnut' 
+      ? {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#ffffff'
+              }
+            }
+          }
+        }
+      : {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#ffffff'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#ffffff'
+              },
+              grid: {
+                color: '#4a4a4a'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#ffffff'
+              },
+              grid: {
+                color: '#4a4a4a'
+              }
+            }
+          }
+        };
+
+    try {
+      const newChart = new ChartJS(ctx, {
+        type: chart.type as any,
+        data: chart.data,
+        options: finalOptions
+      });
+      
+      console.log('Chart created successfully for:', chart.title);
+      
+      // Store reference to chart instance on canvas for future cleanup
+      (canvas as any).chart = newChart;
+      
+    } catch (error) {
+      console.error('Error creating chart for', chart.title, ':', error);
+      
+      // Try with minimal configuration
+      try {
+        const simpleChart = new ChartJS(ctx, {
+          type: chart.type as any,
+          data: chart.data,
+          options: {
+            responsive: false,
+            maintainAspectRatio: false
+          }
+        });
+        console.log('Simple chart created successfully for:', chart.title);
+        (canvas as any).chart = simpleChart;
+      } catch (simpleError) {
+        console.error('Even simple chart failed for', chart.title, ':', simpleError);
       }
-    });
-    
-    // Store reference to chart instance on canvas for future cleanup
-    (canvas as any).chart = newChart;
-    
-    // Force resize after creation
-    setTimeout(() => {
-      newChart.resize();
-    }, 50);
+    }
   }
 
   // Dashboard Management
