@@ -655,7 +655,7 @@ function createDemoHTML() {
             var data = {
                 labels: ['A', 'B', 'C', 'D'],
                 datasets: [{
-                    label: 'Данные',
+                    label: 'Data',
                     data: [
                         Math.floor(Math.random() * 100),
                         Math.floor(Math.random() * 100),
@@ -693,7 +693,7 @@ function createDemoHTML() {
             var value = document.getElementById('filterValue').value;
 
             if (!value.trim()) {
-                alert('Введите значение для фильтра');
+                alert('Please enter a filter value');
                 return;
             }
 
@@ -711,22 +711,22 @@ function createDemoHTML() {
 
             filtersContainer.insertBefore(newFilter, addButton);
             closeModal('filterModal');
-            showNotification('Фильтр добавлен!');
+            showNotification('Filter added!');
             document.getElementById('filterValue').value = '';
         }
 
         function removeFilter(button) {
             button.parentElement.remove();
-            showNotification('Фильтр удален');
+            showNotification('Filter removed');
         }
 
         function getFieldLabel(field) {
             switch(field) {
-                case 'age': return 'Возраст';
-                case 'gender': return 'Пол';
-                case 'region': return 'Регион';
-                case 'status': return 'Статус';
-                case 'date': return 'Дата';
+                case 'age': return 'Age';
+                case 'gender': return 'Gender';
+                case 'region': return 'Region';
+                case 'status': return 'Status';
+                case 'date': return 'Date';
                 default: return field;
             }
         }
@@ -738,16 +738,16 @@ function createDemoHTML() {
             operatorSelect.innerHTML = '';
             
             if (type === 'text') {
-                addOption(operatorSelect, 'eq', 'Равно');
-                addOption(operatorSelect, 'ne', 'Не равно');
-                addOption(operatorSelect, 'contains', 'Содержит');
+                addOption(operatorSelect, 'eq', 'Equals');
+                addOption(operatorSelect, 'ne', 'Not Equals');
+                addOption(operatorSelect, 'contains', 'Contains');
             } else if (type === 'number') {
-                addOption(operatorSelect, 'eq', 'Равно');
-                addOption(operatorSelect, 'gt', 'Больше');
-                addOption(operatorSelect, 'lt', 'Меньше');
+                addOption(operatorSelect, 'eq', 'Equals');
+                addOption(operatorSelect, 'gt', 'Greater Than');
+                addOption(operatorSelect, 'lt', 'Less Than');
             } else {
-                addOption(operatorSelect, 'eq', 'Равно');
-                addOption(operatorSelect, 'ne', 'Не равно');
+                addOption(operatorSelect, 'eq', 'Equals');
+                addOption(operatorSelect, 'ne', 'Not Equals');
             }
         }
 
