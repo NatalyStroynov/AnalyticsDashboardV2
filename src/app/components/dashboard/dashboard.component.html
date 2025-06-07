@@ -59,7 +59,14 @@
           </div>
         </div>
         <div class="widget-content">
-          <canvas [id]="chart.id" class="chart-canvas"></canvas>
+          <canvas 
+            [id]="chart.id" 
+            class="chart-canvas"
+            appChart
+            [chartType]="chart.type"
+            [chartData]="chart.data"
+            [chartOptions]="chart.options">
+          </canvas>
         </div>
       </div>
     </div>

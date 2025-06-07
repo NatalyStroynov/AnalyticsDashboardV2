@@ -21,11 +21,11 @@ export interface Dashboard {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   dashboards: Dashboard[] = [
     {
       id: 'simulation',
@@ -72,6 +72,36 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard(this.currentDashboard.id);
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize charts after view is ready
+    setTimeout(() => this.initializeCharts(), 100);
+  }
+
+  private initializeCharts(): void {
+    this.currentDashboard.charts.forEach(chart => {
+      const canvas = document.getElementById(chart.id) as HTMLCanvasElement;
+      if (canvas) {
+        this.renderChartOnCanvas(canvas, chart);
+      }
+    });
+  }
+
+  private renderChartOnCanvas(canvas: HTMLCanvasElement, chart: Chart): void {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Import Chart.js dynamically to avoid SSR issues
+    import('chart.js').then(({ Chart, registerables }) => {
+      Chart.register(...registerables);
+      
+      new Chart(ctx, {
+        type: chart.type as any,
+        data: chart.data,
+        options: chart.options
+      });
+    });
   }
 
   loadDashboard(dashboardId: string): void {
