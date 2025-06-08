@@ -143,6 +143,31 @@ export class DashboardEffects {
     )
   );
 
+  updateChart$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(DashboardActions.updateChart),
+      map(({ dashboardId, chartId, updates }) => {
+        const updatedChart: Chart = {
+          id: chartId,
+          title: updates.title || 'Updated Chart',
+          type: updates.type || 'bar',
+          data: updates.data || {
+            labels: ['A', 'B', 'C', 'D'],
+            datasets: [{
+              data: [65, 59, 80, 81],
+              backgroundColor: '#d4a421'
+            }]
+          },
+          options: updates.options || {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        };
+        return DashboardActions.updateChartSuccess({ dashboardId, chart: updatedChart });
+      })
+    )
+  );
+
   duplicateChart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(DashboardActions.duplicateChart),
